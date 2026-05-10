@@ -359,9 +359,7 @@ class _TenantBrowseScreenState extends State<TenantBrowseScreen> {
                           size: 14, color: Colors.grey[500]),
                       const SizedBox(width: 4),
                       Text(
-                        [property.addressCity, property.addressState]
-                            .where((s) => s != null && s.isNotEmpty)
-                            .join(', '),
+                        property.addressCity ?? '',
                         style: TextStyle(color: Colors.grey[600], fontSize: 13),
                       ),
                     ]),
@@ -571,9 +569,7 @@ class TenantPropertyDetailScreen extends StatelessWidget {
             Icon(Icons.location_on_outlined, size: 16, color: Colors.grey[500]),
             const SizedBox(width: 4),
             Text(
-              [property.addressCity, property.addressState]
-                  .where((s) => s != null && s.isNotEmpty)
-                  .join(', '),
+              property.addressCity ?? '',
               style: TextStyle(color: Colors.grey[600], fontSize: 14),
             ),
           ]),
@@ -600,7 +596,6 @@ class TenantPropertyDetailScreen extends StatelessWidget {
       if (property.addressStreet != null) property.addressStreet!,
       if (property.addressSubCity != null) property.addressSubCity!,
       if (property.addressCity != null) property.addressCity!,
-      if (property.addressState != null) property.addressState!,
     ];
     if (parts.isEmpty) return const SizedBox.shrink();
 

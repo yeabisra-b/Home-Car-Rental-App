@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -173,8 +172,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String _getProfileImageUrl() {
     if (_user == null) return '';
-    String host = Platform.isAndroid ? '10.0.2.2' : 'localhost';
-    return 'http://$host:3000/api/v1/download/user-profile/${_user!.id}';
+    return '${ApiService.baseUrl}/download/user-profile/${_user!.id}';
   }
 
   @override

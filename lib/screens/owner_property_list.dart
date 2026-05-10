@@ -16,7 +16,7 @@ class OwnerPropertyListScreen extends StatefulWidget {
 class _OwnerPropertyListScreenState extends State<OwnerPropertyListScreen> {
   final ApiService _apiService = ApiService();
   final List<Property> _properties = [];
-  bool _isLoading = true;
+  bool _isLoading = false;
   String? _error;
   int _currentPage = 1;
   int _totalPages = 1;
@@ -29,6 +29,9 @@ class _OwnerPropertyListScreenState extends State<OwnerPropertyListScreen> {
   }
 
   Future<void> _fetchProperties({bool refresh = false}) async {
+    // Guard against concurrent fetches
+    if (_isLoading && !refresh) return;
+
     if (refresh) {
       setState(() {
         _currentPage = 1;
@@ -36,6 +39,8 @@ class _OwnerPropertyListScreenState extends State<OwnerPropertyListScreen> {
         _isLoading = true;
         _error = null;
       });
+    } else {
+      setState(() => _isLoading = true);
     }
 
     final response = await _apiService.getProperties(
@@ -49,6 +54,10 @@ class _OwnerPropertyListScreenState extends State<OwnerPropertyListScreen> {
         if (response.isSuccess && response.data != null) {
           _properties.addAll(response.data!.data);
           _totalPages = response.data!.totalPages;
+          // Only advance the page when the fetch succeeds
+          if (_currentPage < _totalPages) {
+            _currentPage++;
+          }
         } else {
           _error = response.error ?? 'Failed to load properties';
         }
@@ -117,8 +126,16 @@ class _OwnerPropertyListScreenState extends State<OwnerPropertyListScreen> {
       itemCount: _properties.length + (_currentPage < _totalPages ? 1 : 0),
       itemBuilder: (context, index) {
         if (index == _properties.length) {
-          _fetchProperties();
-          return const Center(child: Padding(padding: EdgeInsets.all(8.0), child: CircularProgressIndicator()));
+          // Use a post-frame callback to avoid triggering setState during build
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && !_isLoading) _fetchProperties();
+          });
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: CircularProgressIndicator(),
+            ),
+          );
         }
         return PropertyCard(
           property: _properties[index],

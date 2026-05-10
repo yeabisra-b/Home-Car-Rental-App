@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -114,22 +113,11 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   }
 
   String _getImageUrl(String mediaId) {
-    // Backend base URL. In real apps, this comes from a config.
-    // For Android Emulator, use 10.0.2.2
-    String host = 'localhost';
-    try {
-      if (Platform.isAndroid) {
-        host = '10.0.2.2';
-      }
-    } catch (_) {
-      // Platform.isAndroid might throw on Web
-    }
-    return 'http://$host:3000/api/v1/download/property-media/$mediaId';
+    return '${ApiService.baseUrl}/download/property-media/$mediaId';
   }
 
   String _getProfileImageUrl(String userId) {
-    String host = Platform.isAndroid ? '10.0.2.2' : 'localhost';
-    return 'http://$host:3000/api/v1/download/user-profile/$userId';
+    return '${ApiService.baseUrl}/download/user-profile/$userId';
   }
 
   String _formatCurrency(num amount) {

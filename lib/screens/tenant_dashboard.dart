@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
@@ -151,9 +150,8 @@ class _TenantDashboardState extends State<TenantDashboard> {
       );
     }
 
-    final String host = Platform.isAndroid ? '10.0.2.2' : 'localhost';
     final String imageUrl =
-        'http://$host:3000/api/v1/download/user-profile/${_user!.id}';
+        '${ApiService.baseUrl}/download/user-profile/${_user!.id}';
     final String initials =
         '${_user!.firstName?[0] ?? ''}${_user!.lastName?[0] ?? ''}'
             .toUpperCase();

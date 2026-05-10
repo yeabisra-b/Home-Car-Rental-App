@@ -15,9 +15,6 @@ class Property {
   final String? addressSubCity;
   final String? addressWoreda;
   final String? addressHouseNumber;
-  final String? addressState;
-  final String? addressZip;
-  final num? rentAmount;
   final Map<String, dynamic>? buildingDetails;
   final Map<String, dynamic>? vehicleDetails;
   final List<RentalUnit>? rentalUnits;
@@ -37,9 +34,6 @@ class Property {
     this.addressSubCity,
     this.addressWoreda,
     this.addressHouseNumber,
-    this.addressState,
-    this.addressZip,
-    this.rentAmount,
     this.buildingDetails,
     this.vehicleDetails,
     this.rentalUnits,
@@ -64,9 +58,6 @@ class Property {
       addressSubCity: data['addressSubCity'] as String?,
       addressWoreda: data['addressWoreda'] as String?,
       addressHouseNumber: data['addressHouseNumber'] as String?,
-      addressState: data['addressState'] as String?,
-      addressZip: data['addressZip'] as String?,
-      rentAmount: data['rentAmount'] is num ? data['rentAmount'] : num.tryParse(data['rentAmount']?.toString() ?? ''),
       buildingDetails: data['buildingDetails'] as Map<String, dynamic>?,
       vehicleDetails: data['vehicleDetails'] as Map<String, dynamic>?,
       rentalUnits: data['rentalUnits'] != null
@@ -99,9 +90,6 @@ class Property {
       'addressSubCity': addressSubCity,
       'addressWoreda': addressWoreda,
       'addressHouseNumber': addressHouseNumber,
-      'addressState': addressState,
-      'addressZip': addressZip,
-      'rentAmount': rentAmount,
       'buildingDetails': buildingDetails,
       'vehicleDetails': vehicleDetails,
       'rentalUnits': rentalUnits?.map((e) => e.id).toList(), // Usually just IDs for requests

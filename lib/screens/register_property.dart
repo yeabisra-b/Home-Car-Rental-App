@@ -22,13 +22,10 @@ class _RegisterPropertyScreenState extends State<RegisterPropertyScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _cityController = TextEditingController();
-  final _stateController = TextEditingController();
-  final _zipController = TextEditingController();
   final _streetController = TextEditingController();
   final _subCityController = TextEditingController();
   final _woredaController = TextEditingController();
   final _houseNumberController = TextEditingController();
-  final _rentAmountController = TextEditingController();
 
   // Shared State
   String _type = 'BUILDING';
@@ -65,13 +62,10 @@ class _RegisterPropertyScreenState extends State<RegisterPropertyScreen> {
     _titleController.dispose();
     _descriptionController.dispose();
     _cityController.dispose();
-    _stateController.dispose();
-    _zipController.dispose();
     _streetController.dispose();
     _subCityController.dispose();
     _woredaController.dispose();
     _houseNumberController.dispose();
-    _rentAmountController.dispose();
     _totalFloorsController.dispose();
     _totalUnitsController.dispose();
     _yearBuiltController.dispose();
@@ -214,50 +208,67 @@ class _RegisterPropertyScreenState extends State<RegisterPropertyScreen> {
     );
   }
 
+  // Helper: lays two widgets side-by-side on wide screens, stacked on narrow ones.
+  Widget _responsiveRow(Widget first, Widget second) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 400) {
+          return Column(
+            children: [
+              first,
+              const SizedBox(height: 16),
+              second,
+            ],
+          );
+        }
+        return Row(
+          children: [
+            Expanded(child: first),
+            const SizedBox(width: 16),
+            Expanded(child: second),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildStep1() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.all(16.0),
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SectionHeader(title: 'General Information'),
-            Row(
-              children: [
-                Expanded(
-                  child: PropertyDropdown<String>(
-                    value: _type,
-                    label: 'Property Type',
-                    icon: Icons.category,
-                    isRequired: true,
-                    items: const [
-                      DropdownMenuItem(value: 'BUILDING', child: Text('Building')),
-                      DropdownMenuItem(value: 'VEHICLE', child: Text('Vehicle')),
-                    ],
-                    onChanged: (val) {
-                      if (val != null) setState(() => _type = val);
-                    },
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: PropertyDropdown<String>(
-                    value: _status,
-                    label: 'Status',
-                    icon: Icons.info_outline,
-                    isRequired: true,
-                    items: const [
-                      DropdownMenuItem(value: 'ACTIVE', child: Text('Active')),
-                      DropdownMenuItem(value: 'INACTIVE', child: Text('Inactive')),
-                      DropdownMenuItem(value: 'MAINTENANCE', child: Text('Maintenance')),
-                    ],
-                    onChanged: (val) {
-                      if (val != null) setState(() => _status = val);
-                    },
-                  ),
-                ),
-              ],
+            _responsiveRow(
+              PropertyDropdown<String>(
+                value: _type,
+                label: 'Property Type',
+                icon: Icons.category,
+                isRequired: true,
+                items: const [
+                  DropdownMenuItem(value: 'BUILDING', child: Text('Building')),
+                  DropdownMenuItem(value: 'VEHICLE', child: Text('Vehicle')),
+                ],
+                onChanged: (val) {
+                  if (val != null) setState(() => _type = val);
+                },
+              ),
+              PropertyDropdown<String>(
+                value: _status,
+                label: 'Status',
+                icon: Icons.info_outline,
+                isRequired: true,
+                items: const [
+                  DropdownMenuItem(value: 'ACTIVE', child: Text('Active')),
+                  DropdownMenuItem(value: 'INACTIVE', child: Text('Inactive')),
+                  DropdownMenuItem(value: 'MAINTENANCE', child: Text('Maintenance')),
+                ],
+                onChanged: (val) {
+                  if (val != null) setState(() => _status = val);
+                },
+              ),
             ),
             const SizedBox(height: 16),
             PropertyTextField(
@@ -269,19 +280,6 @@ class _RegisterPropertyScreenState extends State<RegisterPropertyScreen> {
             ),
             const SizedBox(height: 16),
             PropertyTextField(
-              controller: _rentAmountController,
-              label: 'Rent Amount',
-              icon: Icons.attach_money,
-              keyboardType: TextInputType.number,
-              isRequired: true,
-              validator: (val) {
-                if (val == null || val.trim().isEmpty) return 'Rent amount is required';
-                if (num.tryParse(val) == null) return 'Must be a valid number';
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            PropertyTextField(
               controller: _descriptionController,
               label: 'Description (Optional)',
               icon: Icons.description,
@@ -289,84 +287,46 @@ class _RegisterPropertyScreenState extends State<RegisterPropertyScreen> {
             ),
 
             const SectionHeader(title: 'Location & Address'),
-            Row(
-              children: [
-                Expanded(
-                  child: PropertyTextField(
-                    controller: _stateController,
-                    label: 'State / Region',
-                    icon: Icons.map,
-                    isRequired: true,
-                    validator: (val) => val == null || val.trim().isEmpty ? 'State is required' : null,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: PropertyTextField(
-                    controller: _cityController,
-                    label: 'City',
-                    icon: Icons.location_city,
-                    isRequired: true,
-                    validator: (val) => val == null || val.trim().isEmpty ? 'City is required' : null,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: PropertyTextField(
-                    controller: _subCityController,
-                    label: 'Sub City',
-                    icon: Icons.location_on_outlined,
-                    isRequired: true,
-                    validator: (val) => val == null || val.trim().isEmpty ? 'Sub City is required' : null,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: PropertyTextField(
-                    controller: _woredaController,
-                    label: 'Woreda',
-                    icon: Icons.location_on,
-                    isRequired: true,
-                    validator: (val) => val == null || val.trim().isEmpty ? 'Woreda is required' : null,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: PropertyTextField(
-                    controller: _streetController,
-                    label: 'Street',
-                    icon: Icons.add_road,
-                    isRequired: true,
-                    validator: (val) => val == null || val.trim().isEmpty ? 'Street is required' : null,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: PropertyTextField(
-                    controller: _houseNumberController,
-                    label: 'House No.',
-                    icon: Icons.home,
-                    isRequired: true,
-                    validator: (val) => val == null || val.trim().isEmpty ? 'House No is required' : null,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
             PropertyTextField(
-              controller: _zipController,
-              label: 'Zip Code',
-              icon: Icons.local_post_office,
+              controller: _cityController,
+              label: 'City',
+              icon: Icons.location_city,
               isRequired: true,
-              validator: (val) => val == null || val.trim().isEmpty ? 'Zip is required' : null,
+              validator: (val) => val == null || val.trim().isEmpty ? 'City is required' : null,
+            ),
+            const SizedBox(height: 16),
+            _responsiveRow(
+              PropertyTextField(
+                controller: _subCityController,
+                label: 'Sub City',
+                icon: Icons.location_on_outlined,
+                isRequired: true,
+                validator: (val) => val == null || val.trim().isEmpty ? 'Sub City is required' : null,
+              ),
+              PropertyTextField(
+                controller: _woredaController,
+                label: 'Woreda',
+                icon: Icons.location_on,
+                isRequired: true,
+                validator: (val) => val == null || val.trim().isEmpty ? 'Woreda is required' : null,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _responsiveRow(
+              PropertyTextField(
+                controller: _streetController,
+                label: 'Street',
+                icon: Icons.add_road,
+                isRequired: true,
+                validator: (val) => val == null || val.trim().isEmpty ? 'Street is required' : null,
+              ),
+              PropertyTextField(
+                controller: _houseNumberController,
+                label: 'House No.',
+                icon: Icons.home,
+                isRequired: true,
+                validator: (val) => val == null || val.trim().isEmpty ? 'House No is required' : null,
+              ),
             ),
 
             SectionHeader(title: _type == 'BUILDING' ? 'Building Details' : 'Vehicle Details'),
@@ -401,30 +361,23 @@ class _RegisterPropertyScreenState extends State<RegisterPropertyScreen> {
           onChanged: (val) => setState(() => _buildingType = val!),
         ),
         const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: PropertyTextField(
-                controller: _totalFloorsController, 
-                label: 'Total Floors', 
-                icon: Icons.layers, 
-                keyboardType: TextInputType.number,
-                isRequired: true,
-                validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
-              )
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: PropertyTextField(
-                controller: _totalUnitsController, 
-                label: 'Total Units', 
-                icon: Icons.door_front_door, 
-                keyboardType: TextInputType.number,
-                isRequired: true,
-                validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
-              )
-            ),
-          ],
+        _responsiveRow(
+          PropertyTextField(
+            controller: _totalFloorsController,
+            label: 'Total Floors',
+            icon: Icons.layers,
+            keyboardType: TextInputType.number,
+            isRequired: true,
+            validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
+          ),
+          PropertyTextField(
+            controller: _totalUnitsController,
+            label: 'Total Units',
+            icon: Icons.door_front_door,
+            keyboardType: TextInputType.number,
+            isRequired: true,
+            validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
+          ),
         ),
         const SizedBox(height: 16),
         PropertyTextField(
@@ -493,98 +446,83 @@ class _RegisterPropertyScreenState extends State<RegisterPropertyScreen> {
           onChanged: (val) => setState(() => _vehicleType = val!),
         ),
         const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: PropertyTextField(
-                controller: _brandController, 
-                label: 'Make / Brand', 
-                icon: Icons.directions_car,
-                isRequired: true,
-                validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
-              )
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: PropertyTextField(
-                controller: _modelController, 
-                label: 'Model', 
-                icon: Icons.model_training,
-                isRequired: true,
-                validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
-              )
-            ),
-          ],
+        _responsiveRow(
+          PropertyTextField(
+            controller: _brandController,
+            label: 'Make / Brand',
+            icon: Icons.directions_car,
+            isRequired: true,
+            validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
+          ),
+          PropertyTextField(
+            controller: _modelController,
+            label: 'Model',
+            icon: Icons.model_training,
+            isRequired: true,
+            validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
+          ),
         ),
         const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: PropertyTextField(
-                controller: _manufactureYearController,
-                label: 'Year',
-                icon: Icons.calendar_today,
-                keyboardType: TextInputType.number,
-                isRequired: true,
-                validator: (val) {
-                  if (val == null || val.trim().isEmpty) return 'Required';
-                  final year = int.tryParse(val);
-                  if (year == null || year < 1900 || year > DateTime.now().year + 1) return 'Invalid';
-                  return null;
-                },
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: PropertyTextField(
-                controller: _colorController, 
-                label: 'Color', 
-                icon: Icons.palette, 
-                isRequired: true,
-                validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null
-              )
-            ),
-          ],
+        _responsiveRow(
+          PropertyTextField(
+            controller: _manufactureYearController,
+            label: 'Year',
+            icon: Icons.calendar_today,
+            keyboardType: TextInputType.number,
+            isRequired: true,
+            validator: (val) {
+              if (val == null || val.trim().isEmpty) return 'Required';
+              final year = int.tryParse(val);
+              if (year == null || year < 1900 || year > DateTime.now().year + 1) return 'Invalid';
+              return null;
+            },
+          ),
+          PropertyTextField(
+            controller: _colorController,
+            label: 'Color',
+            icon: Icons.palette,
+            isRequired: true,
+            validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
+          ),
         ),
         const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: PropertyDropdown<String>(
-                value: _transmissionType,
-                label: 'Transmission',
-                icon: Icons.settings,
-                items: const [
-                  DropdownMenuItem(value: 'AUTOMATIC', child: Text('Automatic')),
-                  DropdownMenuItem(value: 'MANUAL', child: Text('Manual')),
-                ],
-                onChanged: (val) => setState(() => _transmissionType = val!),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: PropertyDropdown<String>(
-                value: _fuelType,
-                label: 'Fuel Type',
-                icon: Icons.local_gas_station,
-                items: const [
-                  DropdownMenuItem(value: 'PETROL', child: Text('Petrol')),
-                  DropdownMenuItem(value: 'DIESEL', child: Text('Diesel')),
-                  DropdownMenuItem(value: 'ELECTRIC', child: Text('Electric')),
-                  DropdownMenuItem(value: 'HYBRID', child: Text('Hybrid')),
-                ],
-                onChanged: (val) => setState(() => _fuelType = val!),
-              ),
-            ),
-          ],
+        _responsiveRow(
+          PropertyDropdown<String>(
+            value: _transmissionType,
+            label: 'Transmission',
+            icon: Icons.settings,
+            items: const [
+              DropdownMenuItem(value: 'AUTOMATIC', child: Text('Automatic')),
+              DropdownMenuItem(value: 'MANUAL', child: Text('Manual')),
+            ],
+            onChanged: (val) => setState(() => _transmissionType = val!),
+          ),
+          PropertyDropdown<String>(
+            value: _fuelType,
+            label: 'Fuel Type',
+            icon: Icons.local_gas_station,
+            items: const [
+              DropdownMenuItem(value: 'PETROL', child: Text('Petrol')),
+              DropdownMenuItem(value: 'DIESEL', child: Text('Diesel')),
+              DropdownMenuItem(value: 'ELECTRIC', child: Text('Electric')),
+              DropdownMenuItem(value: 'HYBRID', child: Text('Hybrid')),
+            ],
+            onChanged: (val) => setState(() => _fuelType = val!),
+          ),
         ),
         const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(child: PropertyTextField(controller: _engineCapacityController, label: 'Engine Cap. (Optional)', icon: Icons.speed)),
-            const SizedBox(width: 16),
-            Expanded(child: PropertyTextField(controller: _mileageController, label: 'Mileage (Optional)', icon: Icons.av_timer, keyboardType: TextInputType.number)),
-          ],
+        _responsiveRow(
+          PropertyTextField(
+            controller: _engineCapacityController,
+            label: 'Engine Cap. (Optional)',
+            icon: Icons.speed,
+          ),
+          PropertyTextField(
+            controller: _mileageController,
+            label: 'Mileage (Optional)',
+            icon: Icons.av_timer,
+            keyboardType: TextInputType.number,
+          ),
         ),
       ],
     );

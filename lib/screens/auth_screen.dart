@@ -14,6 +14,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   bool _isLogin = true;
   bool _isLoading = false;
+  bool _obscurePassword = true;
 
   String _email = '';
   String _password = '';
@@ -85,6 +86,7 @@ class _AuthScreenState extends State<AuthScreen> {
     required String label,
     required IconData icon,
     bool obscureText = false,
+    VoidCallback? onToggleObscure,
     TextInputType keyboardType = TextInputType.text,
     required FormFieldValidator<String> validator,
     required FormFieldSetter<String> onSaved,
@@ -93,6 +95,16 @@ class _AuthScreenState extends State<AuthScreen> {
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: Colors.teal),
+        suffixIcon: onToggleObscure != null
+            ? IconButton(
+                icon: Icon(
+                  obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                  color: Colors.grey[600],
+                ),
+                onPressed: onToggleObscure,
+                tooltip: obscureText ? 'Show password' : 'Hide password',
+              )
+            : null,
         filled: true,
         fillColor: Colors.grey[50],
         border: OutlineInputBorder(
@@ -198,7 +210,9 @@ class _AuthScreenState extends State<AuthScreen> {
                             _buildTextField(
                               label: 'Password',
                               icon: Icons.lock_outline,
-                              obscureText: true,
+                              obscureText: _obscurePassword,
+                              onToggleObscure: () =>
+                                  setState(() => _obscurePassword = !_obscurePassword),
                               validator: (value) {
                                 if (value == null || value.isEmpty || value.length < 6) {
                                   return 'Password must be at least 6 characters';
@@ -301,6 +315,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               onPressed: () {
                                 setState(() {
                                   _isLogin = !_isLogin;
+                                  _obscurePassword = true; // reset on mode switch
                                 });
                               },
                               style: TextButton.styleFrom(

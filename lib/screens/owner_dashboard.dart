@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -226,7 +225,7 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
               const SizedBox(height: 24),
             ],
             _buildSectionHeader(
-              'Top Performing Properties',
+              'Performing Properties',
               Icons.trending_up,
               Colors.green,
               onViewAll: () {
@@ -235,7 +234,7 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
                 });
               },
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             _buildPropertyPerformanceList(),
           ],
         ),
@@ -284,30 +283,37 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
   }
 
   Widget _buildStatsGrid() {
-    return GridView.count(
-      crossAxisCount: 2,
-      crossAxisSpacing: 16,
-      mainAxisSpacing: 16,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      childAspectRatio: 1.5,
-      children: [
-        _buildStatCard('Revenue MTD', _formatCurrency(_stats!.revenueMTD),
-            Icons.attach_money, Colors.green),
-        _buildStatCard('Occupancy Rate', '${_stats!.occupancyRate}%',
-            Icons.pie_chart, Colors.blue),
-        _buildStatCard('Total Properties', _stats!.propertiesCount.toString(),
-            Icons.business, Colors.indigo),
-        _buildStatCard('Total Units', _stats!.unitsCount.toString(),
-            Icons.meeting_room, Colors.purple),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Dynamically compute aspect ratio so cards are never too short
+        final cardWidth = (constraints.maxWidth - 16) / 2;
+        final aspectRatio = (cardWidth / 110).clamp(1.1, 2.0);
+        return GridView.count(
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          childAspectRatio: aspectRatio,
+          children: [
+            _buildStatCard('Revenue MTD', _formatCurrency(_stats!.revenueMTD),
+                Icons.attach_money, Colors.green),
+            _buildStatCard('Occupancy Rate', '${_stats!.occupancyRate}%',
+                Icons.pie_chart, Colors.blue),
+            _buildStatCard('Total Properties', _stats!.propertiesCount.toString(),
+                Icons.business, Colors.indigo),
+            _buildStatCard('Total Units', _stats!.unitsCount.toString(),
+                Icons.meeting_room, Colors.purple),
+          ],
+        );
+      },
     );
   }
 
   Widget _buildStatCard(
       String title, String value, IconData icon, Color color) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -321,31 +327,37 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Row(
             children: [
-              Icon(icon, size: 20, color: color),
-              const SizedBox(width: 8),
+              Icon(icon, size: 18, color: color),
+              const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   title,
                   style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 11,
                       color: Colors.grey[600],
                       fontWeight: FontWeight.w500),
                   overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
               ),
             ],
           ),
-          const Spacer(),
-          Text(
-            value,
-            style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87),
+          const SizedBox(height: 8),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              value,
+              style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87),
+            ),
           ),
         ],
       ),
@@ -353,32 +365,30 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
   }
 
   Widget _buildQuickActions() {
-    return Row(
-      children: [
-        Expanded(
-          child: ElevatedButton.icon(
-            icon: const Icon(Icons.add_business),
-            label: const Text('Register Property'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.indigo[50],
-              foregroundColor: Colors.indigo,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const RegisterPropertyScreen()),
-              );
-            },
-          ),
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        icon: const Icon(Icons.add_business),
+        label: const Text(
+          'Register Property',
+          overflow: TextOverflow.ellipsis,
         ),
-        const SizedBox(width: 16),
-        
-      ],
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.indigo[50],
+          foregroundColor: Colors.indigo,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12)),
+        ),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const RegisterPropertyScreen()),
+          );
+        },
+      ),
     );
   }
 
@@ -542,9 +552,10 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
       );
     }
 
-    final String host = Platform.isAndroid ? '10.0.2.2' : 'localhost';
+    // Derive the image URL from the same base URL used by the rest of the app
+    // so it works on physical devices, not just the Android emulator.
     final String imageUrl =
-        'http://$host:3000/api/v1/download/user-profile/${_user!.id}';
+        '${ApiService.baseUrl}/download/user-profile/${_user!.id}';
     final String initials =
         '${_user!.firstName?[0] ?? ''}${_user!.lastName?[0] ?? ''}'
             .toUpperCase();
