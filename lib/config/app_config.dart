@@ -7,7 +7,14 @@ class AppConfig {
     await dotenv.load(fileName: '.env', isOptional: true);
   }
 
-  static String get apiBaseUrl =>
-      dotenv.maybeGet('API_BASE_URL', fallback: _defaultApiBaseUrl)?.trim() ??
-      _defaultApiBaseUrl;
+  static String get apiBaseUrl {
+    final configured = dotenv.maybeGet('API_BASE_URL')?.trim();
+    final selected = (configured == null || configured.isEmpty)
+        ? _defaultApiBaseUrl
+        : configured;
+
+    return selected.endsWith('/')
+        ? selected.substring(0, selected.length - 1)
+        : selected;
+  }
 }

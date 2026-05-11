@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -649,7 +649,7 @@ class ApiService {
       );
     } catch (e) {
       // Log error but continue with local cleanup
-      print('Logout backend notification failed: $e');
+      debugPrint('Logout backend notification failed: $e');
     } finally {
       // CRITICAL: Always clear local storage even if backend call fails
       await _storage.delete(key: 'accessToken');
