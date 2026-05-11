@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../config/app_config.dart';
 import '../main.dart';
 import '../models/user.dart';
 import '../models/property.dart';
@@ -19,8 +20,7 @@ import '../models/invoice.dart';
 import '../models/message.dart';
 
 class ApiService {
-  // Configured for Android Emulator as per requirements
-  static const String baseUrl = 'http://192.168.1.8:3000/api/v1';
+  static String get baseUrl => AppConfig.apiBaseUrl;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   Future<String?> _getToken() async {

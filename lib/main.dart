@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'config/app_config.dart';
 import 'screens/auth_screen.dart';
 import 'screens/owner_dashboard.dart';
 import 'screens/tenant_dashboard.dart';
@@ -8,7 +9,9 @@ import 'screens/unit_detail_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AppConfig.load();
   runApp(const RpmsApp());
 }
 
@@ -30,18 +33,21 @@ class RpmsApp extends StatelessWidget {
         '/owner-dashboard': (context) => const OwnerDashboard(),
         '/tenant-dashboard': (context) => const TenantDashboard(),
         '/add-unit': (context) {
-          final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          final args = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>;
           return AddUnitScreen(
             propertyId: args['propertyId'],
             propertyTitle: args['propertyTitle'],
           );
         },
         '/property-detail': (context) {
-          final String propertyId = ModalRoute.of(context)!.settings.arguments as String;
+          final String propertyId =
+              ModalRoute.of(context)!.settings.arguments as String;
           return PropertyDetailScreen(propertyId: propertyId);
         },
         '/unit-detail': (context) {
-          final String unitId = ModalRoute.of(context)!.settings.arguments as String;
+          final String unitId =
+              ModalRoute.of(context)!.settings.arguments as String;
           return UnitDetailScreen(unitId: unitId);
         },
       },

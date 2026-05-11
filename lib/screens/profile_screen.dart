@@ -435,7 +435,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 class _ChangePasswordDialog extends StatefulWidget {
   final ApiService apiService;
-  const _ChangePasswordDialog({super.key, required this.apiService});
+  const _ChangePasswordDialog({required this.apiService});
 
   @override
   State<_ChangePasswordDialog> createState() => _ChangePasswordDialogState();
@@ -517,8 +517,9 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
                   ),
                 ),
                 validator: (value) {
-                  if (value != _newPasswordController.text)
+                  if (value != _newPasswordController.text) {
                     return 'Passwords do not match';
+                  }
                   return null;
                 },
               ),
