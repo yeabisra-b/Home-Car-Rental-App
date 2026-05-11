@@ -5,7 +5,6 @@ import 'package:file_picker/file_picker.dart';
 import '../services/api_service.dart';
 import '../models/lease.dart';
 import '../models/rental_unit.dart';
-import '../models/property.dart';
 import 'edit_unit_screen.dart';
 
 class UnitDetailScreen extends StatefulWidget {
@@ -173,7 +172,8 @@ class _UnitDetailScreenState extends State<UnitDetailScreen> {
         if (unit.description != null && unit.description!.isNotEmpty)
           Text(
             unit.description!,
-            style: TextStyle(fontSize: 16, color: Colors.grey[700], height: 1.5),
+            style:
+                TextStyle(fontSize: 16, color: Colors.grey[700], height: 1.5),
           ),
       ],
     );
@@ -199,8 +199,12 @@ class _UnitDetailScreenState extends State<UnitDetailScreen> {
                 _buildInfoRow(Icons.bathtub_outlined, 'Bathrooms',
                     unit.bathrooms?.toString() ?? 'N/A'),
                 const Divider(),
-                _buildInfoRow(Icons.square_foot, 'Area',
-                    unit.areaSqMeters != null ? '${unit.areaSqMeters} m²' : 'N/A'),
+                _buildInfoRow(
+                    Icons.square_foot,
+                    'Area',
+                    unit.areaSqMeters != null
+                        ? '${unit.areaSqMeters} m²'
+                        : 'N/A'),
                 const Divider(),
                 _buildInfoRow(Icons.layers_outlined, 'Floor Number',
                     unit.floorNumber?.toString() ?? 'N/A'),
@@ -256,7 +260,6 @@ class _UnitDetailScreenState extends State<UnitDetailScreen> {
     );
   }
 
-
   Widget _buildStatusChip(String status) {
     Color color;
     switch (status.toUpperCase()) {
@@ -282,8 +285,8 @@ class _UnitDetailScreenState extends State<UnitDetailScreen> {
       ),
       child: Text(
         status.toUpperCase(),
-        style: TextStyle(
-            color: color, fontWeight: FontWeight.bold, fontSize: 12),
+        style:
+            TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
       ),
     );
   }
@@ -358,7 +361,6 @@ class _UnitDetailScreenState extends State<UnitDetailScreen> {
     );
   }
 
-
   Widget _buildCreateLeasePrompt() {
     return Card(
       color: Colors.indigo[50],
@@ -369,7 +371,8 @@ class _UnitDetailScreenState extends State<UnitDetailScreen> {
           children: [
             const Icon(Icons.assignment_add, size: 48, color: Colors.indigo),
             const SizedBox(height: 16),
-            const Text('This unit is vacant. Create a new lease to start the rental process.',
+            const Text(
+                'This unit is vacant. Create a new lease to start the rental process.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, color: Colors.indigo)),
             const SizedBox(height: 16),
@@ -377,9 +380,11 @@ class _UnitDetailScreenState extends State<UnitDetailScreen> {
               onPressed: _showCreateLeaseModal,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.indigo,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text('Create Lease', style: TextStyle(color: Colors.white)),
+              child: const Text('Create Lease',
+                  style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -400,20 +405,34 @@ class _UnitDetailScreenState extends State<UnitDetailScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Lease #${lease.id.substring(0, 8)}',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16)),
                 Chip(
-                  label: Text(statusUpper, style: const TextStyle(color: Colors.white, fontSize: 12)),
-                  backgroundColor: statusUpper == 'ACTIVE' ? Colors.green : Colors.orange,
+                  label: Text(statusUpper,
+                      style:
+                          const TextStyle(color: Colors.white, fontSize: 12)),
+                  backgroundColor:
+                      statusUpper == 'ACTIVE' ? Colors.green : Colors.orange,
                 ),
               ],
             ),
             const Divider(),
-            _buildInfoRow(Icons.email_outlined, 'Tenant ID', lease.tenantId ?? 'Unknown'),
-            _buildInfoRow(Icons.calendar_today, 'Start',
-                lease.startDate != null ? DateFormat('MMM d, yyyy').format(lease.startDate!) : 'N/A'),
-            _buildInfoRow(Icons.event_available, 'End',
-                lease.endDate != null ? DateFormat('MMM d, yyyy').format(lease.endDate!) : 'N/A'),
-            _buildInfoRow(Icons.attach_money, 'Rent', _formatCurrency(lease.monthlyRent ?? 0)),
+            _buildInfoRow(
+                Icons.email_outlined, 'Tenant ID', lease.tenantId ?? 'Unknown'),
+            _buildInfoRow(
+                Icons.calendar_today,
+                'Start',
+                lease.startDate != null
+                    ? DateFormat('MMM d, yyyy').format(lease.startDate!)
+                    : 'N/A'),
+            _buildInfoRow(
+                Icons.event_available,
+                'End',
+                lease.endDate != null
+                    ? DateFormat('MMM d, yyyy').format(lease.endDate!)
+                    : 'N/A'),
+            _buildInfoRow(Icons.attach_money, 'Rent',
+                _formatCurrency(lease.monthlyRent ?? 0)),
             if (statusUpper == 'DRAFT') ...[
               const SizedBox(height: 16),
               SizedBox(
@@ -423,15 +442,18 @@ class _UnitDetailScreenState extends State<UnitDetailScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.indigo,
                     padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                   icon: const Icon(Icons.upload_file, color: Colors.white),
                   label: const Text('Upload Signed Document',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
               ),
               const SizedBox(height: 8),
-              const Text('Uploading the signed document will activate the lease.',
+              const Text(
+                  'Uploading the signed document will activate the lease.',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 12, color: Colors.grey)),
             ]
@@ -441,11 +463,12 @@ class _UnitDetailScreenState extends State<UnitDetailScreen> {
     );
   }
 
-
   void _showCreateLeaseModal() {
     final emailController = TextEditingController();
-    final rentController = TextEditingController(text: _unit!.rentAmount.toString());
-    final depositController = TextEditingController(text: _unit!.depositAmount?.toString() ?? '');
+    final rentController =
+        TextEditingController(text: _unit!.rentAmount.toString());
+    final depositController =
+        TextEditingController(text: _unit!.depositAmount?.toString() ?? '');
     DateTime startDate = DateTime.now();
     DateTime endDate = DateTime.now().add(const Duration(days: 365));
     bool isSubmitting = false;
@@ -460,7 +483,9 @@ class _UnitDetailScreenState extends State<UnitDetailScreen> {
           return Padding(
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
-              left: 24, right: 24, top: 24,
+              left: 24,
+              right: 24,
+              top: 24,
             ),
             child: SingleChildScrollView(
               child: Column(
@@ -468,7 +493,8 @@ class _UnitDetailScreenState extends State<UnitDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('Create Lease',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 24),
                   TextField(
                     controller: emailController,
@@ -507,7 +533,8 @@ class _UnitDetailScreenState extends State<UnitDetailScreen> {
                       final date = await showDatePicker(
                         context: context,
                         initialDate: startDate,
-                        firstDate: DateTime.now().subtract(const Duration(days: 30)),
+                        firstDate:
+                            DateTime.now().subtract(const Duration(days: 30)),
                         lastDate: DateTime.now().add(const Duration(days: 365)),
                       );
                       if (date != null) setModalState(() => startDate = date);
@@ -536,11 +563,15 @@ class _UnitDetailScreenState extends State<UnitDetailScreen> {
                           ? null
                           : () async {
                               final email = emailController.text.trim();
-                              final rent = num.tryParse(rentController.text) ?? 0;
-                              final deposit = num.tryParse(depositController.text) ?? 0;
+                              final rent =
+                                  num.tryParse(rentController.text) ?? 0;
+                              final deposit =
+                                  num.tryParse(depositController.text) ?? 0;
                               if (email.isEmpty || rent <= 0) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Please fill all required fields correctly.')),
+                                  const SnackBar(
+                                      content: Text(
+                                          'Please fill all required fields correctly.')),
                                 );
                                 return;
                               }
@@ -558,20 +589,29 @@ class _UnitDetailScreenState extends State<UnitDetailScreen> {
                                   Navigator.pop(context);
                                   _fetchUnitDetails();
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Lease created successfully!'), backgroundColor: Colors.green),
+                                    const SnackBar(
+                                        content:
+                                            Text('Lease created successfully!'),
+                                        backgroundColor: Colors.green),
                                   );
                                 } else {
                                   setModalState(() => isSubmitting = false);
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(res.error ?? 'Failed to create lease'), backgroundColor: Colors.red),
+                                    SnackBar(
+                                        content: Text(res.error ??
+                                            'Failed to create lease'),
+                                        backgroundColor: Colors.red),
                                   );
                                 }
                               }
                             },
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.indigo),
                       child: isSubmitting
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text('Create Draft Lease', style: TextStyle(color: Colors.white, fontSize: 16)),
+                          : const Text('Create Draft Lease',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 16)),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -594,7 +634,7 @@ class _UnitDetailScreenState extends State<UnitDetailScreen> {
       if (result != null && result.files.single.path != null) {
         setState(() => _isLoading = true);
         final fileBytes = await File(result.files.single.path!).readAsBytes();
-        
+
         final res = await _apiService.uploadLeaseDocument(
           leaseId: leaseId,
           fileBytes: fileBytes,
@@ -605,12 +645,16 @@ class _UnitDetailScreenState extends State<UnitDetailScreen> {
           setState(() => _isLoading = false);
           if (res.isSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Lease document uploaded and activated!'), backgroundColor: Colors.green),
+              const SnackBar(
+                  content: Text('Lease document uploaded and activated!'),
+                  backgroundColor: Colors.green),
             );
             _fetchUnitDetails();
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(res.error ?? 'Failed to upload document'), backgroundColor: Colors.red),
+              SnackBar(
+                  content: Text(res.error ?? 'Failed to upload document'),
+                  backgroundColor: Colors.red),
             );
           }
         }
@@ -622,5 +666,4 @@ class _UnitDetailScreenState extends State<UnitDetailScreen> {
       );
     }
   }
-
 }

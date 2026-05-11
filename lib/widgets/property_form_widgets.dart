@@ -93,7 +93,7 @@ class PropertyDropdown<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<T>(
-      value: value,
+      initialValue: value,
       decoration: InputDecoration(
         label: _buildLabel(),
         prefixIcon: Icon(icon, color: readOnly ? Colors.grey : Colors.indigo),
@@ -173,18 +173,21 @@ class PropertySubmitButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.indigo,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           elevation: 0,
         ),
         child: isLoading
             ? const SizedBox(
                 height: 20,
                 width: 20,
-                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                child: CircularProgressIndicator(
+                    color: Colors.white, strokeWidth: 2),
               )
             : Text(
                 label,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
       ),
     );
@@ -212,7 +215,7 @@ class PropertySwitch extends StatelessWidget {
       secondary: icon != null ? Icon(icon, color: Colors.indigo) : null,
       value: value,
       onChanged: onChanged,
-      activeColor: Colors.indigo,
+      activeThumbColor: Colors.indigo,
       contentPadding: EdgeInsets.zero,
     );
   }
@@ -222,7 +225,8 @@ class LoadingOverlay extends StatelessWidget {
   final bool isLoading;
   final Widget child;
 
-  const LoadingOverlay({super.key, required this.isLoading, required this.child});
+  const LoadingOverlay(
+      {super.key, required this.isLoading, required this.child});
 
   @override
   Widget build(BuildContext context) {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import '../services/api_service.dart';
 import '../models/property.dart';
-import '../models/paginated_response.dart';
 import 'register_property.dart';
 import 'property_detail.dart';
 
@@ -10,7 +9,8 @@ class OwnerPropertyListScreen extends StatefulWidget {
   const OwnerPropertyListScreen({super.key});
 
   @override
-  State<OwnerPropertyListScreen> createState() => _OwnerPropertyListScreenState();
+  State<OwnerPropertyListScreen> createState() =>
+      _OwnerPropertyListScreenState();
 }
 
 class _OwnerPropertyListScreenState extends State<OwnerPropertyListScreen> {
@@ -103,18 +103,23 @@ class _OwnerPropertyListScreenState extends State<OwnerPropertyListScreen> {
             const SizedBox(height: 16),
             Text(
               'No properties registered yet',
-              style: TextStyle(fontSize: 18, color: Colors.grey[600], fontWeight: FontWeight.w500),
+              style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const RegisterPropertyScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const RegisterPropertyScreen()),
                 ).then((_) => _fetchProperties(refresh: true));
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo),
-              child: const Text('Register Now', style: TextStyle(color: Colors.white)),
+              child: const Text('Register Now',
+                  style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -143,7 +148,8 @@ class _OwnerPropertyListScreenState extends State<OwnerPropertyListScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => PropertyDetailScreen(propertyId: _properties[index].id),
+                builder: (context) =>
+                    PropertyDetailScreen(propertyId: _properties[index].id),
               ),
             );
           },
@@ -198,7 +204,8 @@ class PropertyCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       property.title,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -210,7 +217,9 @@ class PropertyCard extends StatelessWidget {
               Row(
                 children: [
                   Icon(
-                    property.type == 'BUILDING' ? Icons.business : Icons.directions_car,
+                    property.type == 'BUILDING'
+                        ? Icons.business
+                        : Icons.directions_car,
                     size: 16,
                     color: Colors.grey[600],
                   ),
@@ -220,7 +229,8 @@ class PropertyCard extends StatelessWidget {
                     style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
                   const SizedBox(width: 16),
-                  Icon(Icons.location_on_outlined, size: 16, color: Colors.grey[600]),
+                  Icon(Icons.location_on_outlined,
+                      size: 16, color: Colors.grey[600]),
                   const SizedBox(width: 4),
                   Text(
                     property.addressCity ?? 'N/A',
@@ -236,24 +246,30 @@ class PropertyCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.layers_outlined, size: 16, color: Colors.indigo[400]),
+                      Icon(Icons.layers_outlined,
+                          size: 16, color: Colors.indigo[400]),
                       const SizedBox(width: 4),
                       Text(
                         '${property.rentalUnits?.length ?? 0} Units',
-                        style: TextStyle(color: Colors.indigo[700], fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                            color: Colors.indigo[700],
+                            fontWeight: FontWeight.w500),
                       ),
                     ],
                   ),
                   if (property.type == 'VEHICLE')
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: Colors.grey[200],
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        (property.vehicleDetails?['plateNumber'] as String?) ?? 'No Plate',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        (property.vehicleDetails?['plateNumber'] as String?) ??
+                            'No Plate',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 13),
                       ),
                     ),
                 ],
@@ -291,7 +307,8 @@ class PropertyCard extends StatelessWidget {
       ),
       child: Text(
         status,
-        style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.bold),
+        style:
+            TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.bold),
       ),
     );
   }

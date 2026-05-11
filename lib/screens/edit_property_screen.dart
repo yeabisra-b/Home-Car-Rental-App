@@ -412,8 +412,9 @@ class _EditPropertyScreenState extends State<EditPropertyScreen> {
                   label: 'City',
                   icon: Icons.location_city,
                   isRequired: true,
-                  validator: (val) =>
-                      val == null || val.trim().isEmpty ? 'City is required' : null,
+                  validator: (val) => val == null || val.trim().isEmpty
+                      ? 'City is required'
+                      : null,
                 ),
                 const SizedBox(height: 16),
                 _responsiveRow(
@@ -422,16 +423,18 @@ class _EditPropertyScreenState extends State<EditPropertyScreen> {
                     label: 'Sub City',
                     icon: Icons.location_on_outlined,
                     isRequired: true,
-                    validator: (val) =>
-                        val == null || val.trim().isEmpty ? 'Sub City is required' : null,
+                    validator: (val) => val == null || val.trim().isEmpty
+                        ? 'Sub City is required'
+                        : null,
                   ),
                   PropertyTextField(
                     controller: _woredaController,
                     label: 'Woreda',
                     icon: Icons.location_on,
                     isRequired: true,
-                    validator: (val) =>
-                        val == null || val.trim().isEmpty ? 'Woreda is required' : null,
+                    validator: (val) => val == null || val.trim().isEmpty
+                        ? 'Woreda is required'
+                        : null,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -441,16 +444,18 @@ class _EditPropertyScreenState extends State<EditPropertyScreen> {
                     label: 'Street',
                     icon: Icons.add_road,
                     isRequired: true,
-                    validator: (val) =>
-                        val == null || val.trim().isEmpty ? 'Street is required' : null,
+                    validator: (val) => val == null || val.trim().isEmpty
+                        ? 'Street is required'
+                        : null,
                   ),
                   PropertyTextField(
                     controller: _houseNumberController,
                     label: 'House No.',
                     icon: Icons.home,
                     isRequired: true,
-                    validator: (val) =>
-                        val == null || val.trim().isEmpty ? 'House No is required' : null,
+                    validator: (val) => val == null || val.trim().isEmpty
+                        ? 'House No is required'
+                        : null,
                   ),
                 ),
                 SectionHeader(
@@ -507,8 +512,9 @@ class _EditPropertyScreenState extends State<EditPropertyScreen> {
           validator: (val) {
             if (val == null || val.trim().isEmpty) return null;
             final year = int.tryParse(val);
-            if (year == null || year < 1800 || year > DateTime.now().year)
+            if (year == null || year < 1800 || year > DateTime.now().year) {
               return 'Invalid year';
+            }
             return null;
           },
         ),
@@ -585,7 +591,9 @@ class _EditPropertyScreenState extends State<EditPropertyScreen> {
               final year = int.tryParse(val);
               if (year == null ||
                   year < 1900 ||
-                  year > DateTime.now().year + 1) return 'Invalid';
+                  year > DateTime.now().year + 1) {
+                return 'Invalid';
+              }
               return null;
             },
           ),

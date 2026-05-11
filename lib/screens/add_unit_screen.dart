@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
-import '../models/api_response.dart';
-import '../models/rental_unit.dart';
 import '../widgets/property_form_widgets.dart';
 
 class AddUnitScreen extends StatefulWidget {
@@ -91,7 +89,8 @@ class _AddUnitScreenState extends State<AddUnitScreen> {
             .toList();
       }
 
-      final response = await _apiService.addRentalUnit(widget.propertyId, payload);
+      final response =
+          await _apiService.addRentalUnit(widget.propertyId, payload);
 
       if (response.isSuccess) {
         if (mounted) {
@@ -132,7 +131,8 @@ class _AddUnitScreenState extends State<AddUnitScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text('Add New Unit', style: TextStyle(color: Colors.white)),
+        title:
+            const Text('Add New Unit', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.indigo,
         elevation: 0,
       ),
@@ -159,8 +159,9 @@ class _AddUnitScreenState extends State<AddUnitScreen> {
                   label: 'Unit Identifier (e.g. A-101)',
                   icon: Icons.numbers,
                   isRequired: true,
-                  validator: (val) =>
-                      val == null || val.isEmpty ? 'Unit number is required' : null,
+                  validator: (val) => val == null || val.isEmpty
+                      ? 'Unit number is required'
+                      : null,
                 ),
                 const SizedBox(height: 16),
                 PropertyDropdown<String>(
@@ -170,9 +171,12 @@ class _AddUnitScreenState extends State<AddUnitScreen> {
                   isRequired: true,
                   items: const [
                     DropdownMenuItem(value: 'VACANT', child: Text('Vacant')),
-                    DropdownMenuItem(value: 'OCCUPIED', child: Text('Occupied')),
-                    DropdownMenuItem(value: 'MAINTENANCE', child: Text('Maintenance')),
-                    DropdownMenuItem(value: 'UNAVAILABLE', child: Text('Unavailable')),
+                    DropdownMenuItem(
+                        value: 'OCCUPIED', child: Text('Occupied')),
+                    DropdownMenuItem(
+                        value: 'MAINTENANCE', child: Text('Maintenance')),
+                    DropdownMenuItem(
+                        value: 'UNAVAILABLE', child: Text('Unavailable')),
                   ],
                   onChanged: (val) => setState(() => _selectedStatus = val!),
                 ),
@@ -192,10 +196,11 @@ class _AddUnitScreenState extends State<AddUnitScreen> {
                         label: 'Monthly Rent',
                         icon: Icons.attach_money,
                         isRequired: true,
-                        keyboardType:
-                            const TextInputType.numberWithOptions(decimal: true),
-                        validator: (val) =>
-                            val == null || val.isEmpty ? 'Rent is required' : null,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        validator: (val) => val == null || val.isEmpty
+                            ? 'Rent is required'
+                            : null,
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -205,10 +210,11 @@ class _AddUnitScreenState extends State<AddUnitScreen> {
                         label: 'Deposit',
                         icon: Icons.security,
                         isRequired: true,
-                        keyboardType:
-                            const TextInputType.numberWithOptions(decimal: true),
-                        validator: (val) =>
-                            val == null || val.isEmpty ? 'Deposit is required' : null,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        validator: (val) => val == null || val.isEmpty
+                            ? 'Deposit is required'
+                            : null,
                       ),
                     ),
                   ],
@@ -223,7 +229,8 @@ class _AddUnitScreenState extends State<AddUnitScreen> {
                         icon: Icons.bed,
                         isRequired: true,
                         keyboardType: TextInputType.number,
-                        validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                        validator: (val) =>
+                            val == null || val.isEmpty ? 'Required' : null,
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -234,7 +241,8 @@ class _AddUnitScreenState extends State<AddUnitScreen> {
                         icon: Icons.bathtub,
                         isRequired: true,
                         keyboardType: TextInputType.number,
-                        validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                        validator: (val) =>
+                            val == null || val.isEmpty ? 'Required' : null,
                       ),
                     ),
                   ],
@@ -249,7 +257,8 @@ class _AddUnitScreenState extends State<AddUnitScreen> {
                         icon: Icons.layers,
                         isRequired: true,
                         keyboardType: TextInputType.number,
-                        validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                        validator: (val) =>
+                            val == null || val.isEmpty ? 'Required' : null,
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -259,9 +268,10 @@ class _AddUnitScreenState extends State<AddUnitScreen> {
                         label: 'Area (sq m)',
                         icon: Icons.square_foot,
                         isRequired: true,
-                        keyboardType:
-                            const TextInputType.numberWithOptions(decimal: true),
-                        validator: (val) => val == null || val.isEmpty ? 'Required' : null,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        validator: (val) =>
+                            val == null || val.isEmpty ? 'Required' : null,
                       ),
                     ),
                   ],

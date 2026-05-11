@@ -42,7 +42,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: widget.themeColor,
+        activeThumbColor: widget.themeColor,
       ),
     );
   }
@@ -74,7 +74,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _buildSectionHeader('Notifications'),
           Card(
             margin: const EdgeInsets.symmetric(horizontal: 16),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Column(
               children: [
                 _buildSwitchTile(
@@ -100,11 +101,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
           ),
-
           _buildSectionHeader('Appearance'),
           Card(
             margin: const EdgeInsets.symmetric(horizontal: 16),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: _buildSwitchTile(
               title: 'Dark Mode',
               icon: Icons.dark_mode_outlined,
@@ -112,11 +113,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onChanged: (val) => setState(() => _darkMode = val),
             ),
           ),
-
           _buildSectionHeader('Support & Legal'),
           Card(
             margin: const EdgeInsets.symmetric(horizontal: 16),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             child: Column(
               children: [
                 _buildNavigationTile(
@@ -134,7 +135,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.description_outlined,
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Terms of Service coming soon')),
+                      const SnackBar(
+                          content: Text('Terms of Service coming soon')),
                     );
                   },
                 ),
@@ -144,14 +146,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.privacy_tip_outlined,
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Privacy Policy coming soon')),
+                      const SnackBar(
+                          content: Text('Privacy Policy coming soon')),
                     );
                   },
                 ),
               ],
             ),
           ),
-
           const SizedBox(height: 32),
           Center(
             child: Text(

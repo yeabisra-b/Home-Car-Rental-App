@@ -4,13 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
 import '../models/property.dart';
-import '../models/user.dart';
-import '../models/rental_unit.dart';
-import '../models/property_media.dart';
-import 'register_property.dart';
 import 'edit_property_screen.dart';
-import 'add_unit_screen.dart';
-import 'edit_unit_screen.dart';
 
 class PropertyDetailScreen extends StatefulWidget {
   final String propertyId;

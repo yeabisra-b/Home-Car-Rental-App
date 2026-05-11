@@ -95,10 +95,13 @@ class ApiService {
   void _forceLogout() {
     _storage.delete(key: 'accessToken');
     _storage.delete(key: 'refreshToken');
-    navigatorKey.currentState?.pushNamedAndRemoveUntil('/auth', (route) => false);
+    navigatorKey.currentState
+        ?.pushNamedAndRemoveUntil('/auth', (route) => false);
   }
 
-  Future<http.Response> _sendRequest(Future<http.Response> Function(Map<String, String> headers) makeRequest) async {
+  Future<http.Response> _sendRequest(
+      Future<http.Response> Function(Map<String, String> headers)
+          makeRequest) async {
     var headers = await _getHeaders();
     var response = await makeRequest(headers);
     if (response.statusCode == 401) {
@@ -113,7 +116,9 @@ class ApiService {
     return response;
   }
 
-  Future<http.Response> _sendMultipart(Future<http.StreamedResponse> Function(Map<String, String> headers) makeRequest) async {
+  Future<http.Response> _sendMultipart(
+      Future<http.StreamedResponse> Function(Map<String, String> headers)
+          makeRequest) async {
     var headers = await _getHeaders();
     var response = await http.Response.fromStream(await makeRequest(headers));
     if (response.statusCode == 401) {
@@ -149,9 +154,11 @@ class ApiService {
           'password': password,
           'role': role,
           if (firstName != null && firstName.isNotEmpty) 'firstName': firstName,
-          if (middleName != null && middleName.isNotEmpty) 'middleName': middleName,
+          if (middleName != null && middleName.isNotEmpty)
+            'middleName': middleName,
           if (lastName != null && lastName.isNotEmpty) 'lastName': lastName,
-          if (phoneNumber != null && phoneNumber.isNotEmpty) 'phoneNumber': phoneNumber,
+          if (phoneNumber != null && phoneNumber.isNotEmpty)
+            'phoneNumber': phoneNumber,
         }),
       );
 
@@ -207,23 +214,25 @@ class ApiService {
   Future<ApiResponse<User>> getProfile() async {
     try {
       final response = await _sendRequest((headers) => http.get(
-        Uri.parse('$baseUrl/auth/profile'),
-        headers: headers,
-      ));
+            Uri.parse('$baseUrl/auth/profile'),
+            headers: headers,
+          ));
       return _processResponse<User>(response, (json) => User.fromJson(json));
     } catch (e) {
       return ApiResponse.error('Connection error: $e');
     }
   }
 
-  Future<ApiResponse<Property>> updateProperty(String id, Map<String, dynamic> data) async {
+  Future<ApiResponse<Property>> updateProperty(
+      String id, Map<String, dynamic> data) async {
     try {
       final response = await _sendRequest((headers) => http.put(
-        Uri.parse('$baseUrl/properties/$id'),
-        headers: headers,
-        body: json.encode(data),
-      ));
-      return _processResponse<Property>(response, (json) => Property.fromJson(json));
+            Uri.parse('$baseUrl/properties/$id'),
+            headers: headers,
+            body: json.encode(data),
+          ));
+      return _processResponse<Property>(
+          response, (json) => Property.fromJson(json));
     } catch (e) {
       return ApiResponse.error('Connection error: $e');
     }
@@ -232,10 +241,11 @@ class ApiService {
   Future<ApiResponse<RentalUnit>> getUnitById(String unitId) async {
     try {
       final response = await _sendRequest((headers) => http.get(
-        Uri.parse('$baseUrl/units/$unitId'),
-        headers: headers,
-      ));
-      return _processResponse<RentalUnit>(response, (json) => RentalUnit.fromJson(json));
+            Uri.parse('$baseUrl/units/$unitId'),
+            headers: headers,
+          ));
+      return _processResponse<RentalUnit>(
+          response, (json) => RentalUnit.fromJson(json));
     } catch (e) {
       return ApiResponse.error('Connection error: $e');
     }
@@ -244,15 +254,15 @@ class ApiService {
   Future<ApiResponse<void>> deleteProperty(String id) async {
     try {
       final response = await _sendRequest((headers) => http.delete(
-        Uri.parse('$baseUrl/properties/$id'),
-        headers: headers,
-      ));
+            Uri.parse('$baseUrl/properties/$id'),
+            headers: headers,
+          ));
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return ApiResponse.success(null);
       } else {
         try {
           final data = json.decode(response.body);
-          return ApiResponse.fromJson(data, (json) => null);
+          return ApiResponse.fromJson(data, (json) {});
         } catch (_) {
           return ApiResponse.error(
             'HTTP ${response.statusCode}: ${response.reasonPhrase}',
@@ -267,15 +277,15 @@ class ApiService {
   Future<ApiResponse<void>> deletePropertyMedia(String mediaId) async {
     try {
       final response = await _sendRequest((headers) => http.delete(
-        Uri.parse('$baseUrl/properties/media/$mediaId'),
-        headers: headers,
-      ));
+            Uri.parse('$baseUrl/properties/media/$mediaId'),
+            headers: headers,
+          ));
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return ApiResponse.success(null);
       } else {
         try {
           final data = json.decode(response.body);
-          return ApiResponse.fromJson(data, (json) => null);
+          return ApiResponse.fromJson(data, (json) {});
         } catch (_) {
           return ApiResponse.error(
             'HTTP ${response.statusCode}: ${response.reasonPhrase}',
@@ -290,33 +300,34 @@ class ApiService {
   Future<ApiResponse<User>> updateProfile(Map<String, dynamic> data) async {
     try {
       final response = await _sendRequest((headers) => http.put(
-        Uri.parse('$baseUrl/auth/profile'),
-        headers: headers,
-        body: json.encode(data),
-      ));
+            Uri.parse('$baseUrl/auth/profile'),
+            headers: headers,
+            body: json.encode(data),
+          ));
       return _processResponse<User>(response, (json) => User.fromJson(json));
     } catch (e) {
       return ApiResponse.error('Connection error: $e');
     }
   }
 
-  Future<ApiResponse<void>> changePassword(String oldPassword, String newPassword) async {
+  Future<ApiResponse<void>> changePassword(
+      String oldPassword, String newPassword) async {
     try {
       final response = await _sendRequest((headers) => http.put(
-        Uri.parse('$baseUrl/auth/change-password'),
-        headers: headers,
-        body: json.encode({
-          'oldPassword': oldPassword,
-          'newPassword': newPassword,
-        }),
-      ));
-      
+            Uri.parse('$baseUrl/auth/change-password'),
+            headers: headers,
+            body: json.encode({
+              'oldPassword': oldPassword,
+              'newPassword': newPassword,
+            }),
+          ));
+
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return ApiResponse.success(null);
       } else {
         try {
           final data = json.decode(response.body);
-          return ApiResponse.fromJson(data, (json) => null);
+          return ApiResponse.fromJson(data, (json) {});
         } catch (_) {
           return ApiResponse.error(
             'HTTP ${response.statusCode}: ${response.reasonPhrase}',
@@ -335,7 +346,7 @@ class ApiService {
   ) async {
     try {
       final uri = Uri.parse('$baseUrl/upload/user-profile/$userId');
-      
+
       final response = await _sendMultipart((headers) async {
         final request = http.MultipartRequest('POST', uri);
         if (headers.containsKey('Authorization')) {
@@ -414,9 +425,9 @@ class ApiService {
   Future<ApiResponse<DashboardStats>> getOwnerStats() async {
     try {
       final response = await _sendRequest((headers) => http.get(
-        Uri.parse('$baseUrl/dashboard/owner/stats'),
-        headers: headers,
-      ));
+            Uri.parse('$baseUrl/dashboard/owner/stats'),
+            headers: headers,
+          ));
       return _processResponse<DashboardStats>(
         response,
         (json) => DashboardStats.fromJson(json),
@@ -426,12 +437,13 @@ class ApiService {
     }
   }
 
-  Future<ApiResponse<List<PropertyPerformance>>> getPropertyPerformance() async {
+  Future<ApiResponse<List<PropertyPerformance>>>
+      getPropertyPerformance() async {
     try {
       final response = await _sendRequest((headers) => http.get(
-        Uri.parse('$baseUrl/reports/property-performance'),
-        headers: headers,
-      ));
+            Uri.parse('$baseUrl/reports/property-performance'),
+            headers: headers,
+          ));
       return _processResponse<List<PropertyPerformance>>(
         response,
         (json) {
@@ -444,17 +456,19 @@ class ApiService {
     }
   }
 
-  Future<ApiResponse<List<MaintenanceRequest>>> getUrgentMaintenanceRequests() async {
+  Future<ApiResponse<List<MaintenanceRequest>>>
+      getUrgentMaintenanceRequests() async {
     try {
       final response = await _sendRequest((headers) => http.get(
-        Uri.parse('$baseUrl/maintenance-requests?status=OPEN'),
-        headers: headers,
-      ));
+            Uri.parse('$baseUrl/maintenance-requests?status=OPEN'),
+            headers: headers,
+          ));
       return _processResponse<List<MaintenanceRequest>>(
         response,
         (json) {
           final List data = json['data'] ?? [];
-          final parsedList = data.map((e) => MaintenanceRequest.fromJson(e)).toList();
+          final parsedList =
+              data.map((e) => MaintenanceRequest.fromJson(e)).toList();
           return parsedList.where((req) => req.priority == 'URGENT').toList();
         },
       );
@@ -465,13 +479,14 @@ class ApiService {
 
   // --- Property Registration ---
 
-  Future<ApiResponse<Property>> createProperty(Map<String, dynamic> payload) async {
+  Future<ApiResponse<Property>> createProperty(
+      Map<String, dynamic> payload) async {
     try {
       final response = await _sendRequest((headers) => http.post(
-        Uri.parse('$baseUrl/properties'),
-        headers: headers,
-        body: json.encode(payload),
-      ));
+            Uri.parse('$baseUrl/properties'),
+            headers: headers,
+            body: json.encode(payload),
+          ));
       return _processResponse<Property>(
         response,
         (json) => Property.fromJson(json),
@@ -492,8 +507,10 @@ class ApiService {
         'limit': limit.toString(),
         if (type != null) 'type': type,
       };
-      final uri = Uri.parse('$baseUrl/properties').replace(queryParameters: queryParams);
-      final response = await _sendRequest((headers) => http.get(uri, headers: headers));
+      final uri = Uri.parse('$baseUrl/properties')
+          .replace(queryParameters: queryParams);
+      final response =
+          await _sendRequest((headers) => http.get(uri, headers: headers));
       return _processResponse<PaginatedResponse<Property>>(
         response,
         (json) => PaginatedResponse.fromJson(json, (p) => Property.fromJson(p)),
@@ -506,9 +523,9 @@ class ApiService {
   Future<ApiResponse<Property>> getPropertyById(String propertyId) async {
     try {
       final response = await _sendRequest((headers) => http.get(
-        Uri.parse('$baseUrl/properties/$propertyId'),
-        headers: headers,
-      ));
+            Uri.parse('$baseUrl/properties/$propertyId'),
+            headers: headers,
+          ));
       return _processResponse<Property>(
         response,
         (json) => Property.fromJson(json),
@@ -518,27 +535,31 @@ class ApiService {
     }
   }
 
-  Future<ApiResponse<RentalUnit>> addRentalUnit(String propertyId, Map<String, dynamic> payload) async {
+  Future<ApiResponse<RentalUnit>> addRentalUnit(
+      String propertyId, Map<String, dynamic> payload) async {
     try {
       final response = await _sendRequest((headers) => http.post(
-        Uri.parse('$baseUrl/properties/$propertyId/units'),
-        headers: headers,
-        body: json.encode(payload),
-      ));
-      return _processResponse<RentalUnit>(response, (json) => RentalUnit.fromJson(json));
+            Uri.parse('$baseUrl/properties/$propertyId/units'),
+            headers: headers,
+            body: json.encode(payload),
+          ));
+      return _processResponse<RentalUnit>(
+          response, (json) => RentalUnit.fromJson(json));
     } catch (e) {
       return ApiResponse.error('Connection error: $e');
     }
   }
 
-  Future<ApiResponse<RentalUnit>> updateRentalUnit(String unitId, Map<String, dynamic> payload) async {
+  Future<ApiResponse<RentalUnit>> updateRentalUnit(
+      String unitId, Map<String, dynamic> payload) async {
     try {
       final response = await _sendRequest((headers) => http.put(
-        Uri.parse('$baseUrl/units/$unitId'),
-        headers: headers,
-        body: json.encode(payload),
-      ));
-      return _processResponse<RentalUnit>(response, (json) => RentalUnit.fromJson(json));
+            Uri.parse('$baseUrl/units/$unitId'),
+            headers: headers,
+            body: json.encode(payload),
+          ));
+      return _processResponse<RentalUnit>(
+          response, (json) => RentalUnit.fromJson(json));
     } catch (e) {
       return ApiResponse.error('Connection error: $e');
     }
@@ -547,15 +568,15 @@ class ApiService {
   Future<ApiResponse<void>> deleteRentalUnit(String unitId) async {
     try {
       final response = await _sendRequest((headers) => http.delete(
-        Uri.parse('$baseUrl/units/$unitId'),
-        headers: headers,
-      ));
+            Uri.parse('$baseUrl/units/$unitId'),
+            headers: headers,
+          ));
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return ApiResponse.success(null);
       } else {
         try {
           final data = json.decode(response.body);
-          return ApiResponse.fromJson(data, (json) => null);
+          return ApiResponse.fromJson(data, (json) {});
         } catch (_) {
           return ApiResponse.error(
             'HTTP ${response.statusCode}: ${response.reasonPhrase}',
@@ -574,7 +595,7 @@ class ApiService {
   ) async {
     try {
       final uri = Uri.parse('$baseUrl/upload/property-media/$propertyId');
-      
+
       final response = await _sendMultipart((headers) async {
         final request = http.MultipartRequest('POST', uri);
         if (headers.containsKey('Authorization')) {
@@ -681,8 +702,7 @@ class ApiService {
             Uri.parse('$baseUrl/leases/$leaseId'),
             headers: headers,
           ));
-      return _processResponse<Lease>(
-          response, (json) => Lease.fromJson(json));
+      return _processResponse<Lease>(response, (json) => Lease.fromJson(json));
     } catch (e) {
       return ApiResponse.error('Connection error: $e');
     }
@@ -701,14 +721,13 @@ class ApiService {
         if (status != null) 'status': status,
         if (leaseId != null) 'leaseId': leaseId,
       };
-      final uri = Uri.parse('$baseUrl/invoices')
-          .replace(queryParameters: queryParams);
+      final uri =
+          Uri.parse('$baseUrl/invoices').replace(queryParameters: queryParams);
       final response =
           await _sendRequest((headers) => http.get(uri, headers: headers));
       return _processResponse<PaginatedResponse<Invoice>>(
         response,
-        (json) =>
-            PaginatedResponse.fromJson(json, (i) => Invoice.fromJson(i)),
+        (json) => PaginatedResponse.fromJson(json, (i) => Invoice.fromJson(i)),
       );
     } catch (e) {
       return ApiResponse.error('Connection error: $e');
@@ -780,7 +799,8 @@ class ApiService {
     }
   }
 
-  Future<ApiResponse<List<ConversationSummary>>> getConversations(String currentUserId) async {
+  Future<ApiResponse<List<ConversationSummary>>> getConversations(
+      String currentUserId) async {
     try {
       final response = await _sendRequest((headers) => http.get(
             Uri.parse('$baseUrl/messages/conversations'),
@@ -788,7 +808,8 @@ class ApiService {
           ));
       return _processResponse<List<ConversationSummary>>(
         response,
-        (j) => (j['conversations'] as List<dynamic>?)
+        (j) =>
+            (j['conversations'] as List<dynamic>?)
                 ?.map((e) => ConversationSummary.fromJson(e, currentUserId))
                 .toList() ??
             [],
@@ -811,7 +832,8 @@ class ApiService {
       if (otherUserId != null) {
         params['otherUserId'] = otherUserId;
       }
-      final uri = Uri.parse('$baseUrl/messages').replace(queryParameters: params);
+      final uri =
+          Uri.parse('$baseUrl/messages').replace(queryParameters: params);
       final response =
           await _sendRequest((headers) => http.get(uri, headers: headers));
       return _processResponse<PaginatedResponse<AppMessage>>(
@@ -883,16 +905,16 @@ class ApiService {
           filename: fileName,
           contentType: MediaType('application', 'pdf'),
         ));
-        
+
         return await request.send();
       });
-      
-      return _processResponse<Lease>(response, (j) => Lease.fromJson(j['lease'] ?? j));
+
+      return _processResponse<Lease>(
+          response, (j) => Lease.fromJson(j['lease'] ?? j));
     } catch (e) {
       return ApiResponse.error('Connection error: $e');
     }
   }
-
 
   Future<ApiResponse<Lease>> terminateLease({
     required String leaseId,
@@ -929,5 +951,4 @@ class ApiService {
       return ApiResponse.error('Connection error: $e');
     }
   }
-
 }

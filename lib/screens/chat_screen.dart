@@ -25,7 +25,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final ApiService _apiService = ApiService();
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _messageController = TextEditingController();
-  
+
   List<AppMessage> _messages = [];
   bool _isLoading = true;
   bool _isSending = false;
@@ -37,7 +37,8 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     _fetchMessages();
     // Auto-refresh every 10 seconds for new messages
-    _refreshTimer = Timer.periodic(const Duration(seconds: 10), (_) => _fetchMessages(silent: true));
+    _refreshTimer = Timer.periodic(
+        const Duration(seconds: 10), (_) => _fetchMessages(silent: true));
   }
 
   @override
@@ -66,7 +67,8 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {
         _isLoading = false;
         if (response.isSuccess) {
-          _messages = response.data!.data.reversed.toList(); // Reverse to show oldest at top, newest at bottom
+          _messages = response.data!.data.reversed
+              .toList(); // Reverse to show oldest at top, newest at bottom
           // Mark unread messages as read
           for (var msg in _messages) {
             if (msg.readAt == null && msg.receiverId == widget.currentUserId) {
@@ -131,15 +133,16 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               backgroundColor: Colors.white24,
-              child: const Icon(Icons.person, color: Colors.white),
+              child: Icon(Icons.person, color: Colors.white),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 '${widget.otherUser.firstName} ${widget.otherUser.lastName}',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -159,7 +162,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMessagesList() {
     if (_isLoading) {
-      return Center(child: CircularProgressIndicator(color: widget.primaryColor));
+      return Center(
+          child: CircularProgressIndicator(color: widget.primaryColor));
     }
 
     if (_error != null && _messages.isEmpty) {
@@ -173,7 +177,8 @@ class _ChatScreenState extends State<ChatScreen> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => _fetchMessages(),
-              style: ElevatedButton.styleFrom(backgroundColor: widget.primaryColor),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: widget.primaryColor),
               child: const Text('Retry', style: TextStyle(color: Colors.white)),
             ),
           ],
@@ -188,7 +193,8 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Icon(Icons.chat_bubble_outline, size: 64, color: Colors.grey[300]),
             const SizedBox(height: 16),
-            Text('No messages yet', style: TextStyle(color: Colors.grey[500], fontSize: 16)),
+            Text('No messages yet',
+                style: TextStyle(color: Colors.grey[500], fontSize: 16)),
           ],
         ),
       );
@@ -201,7 +207,7 @@ class _ChatScreenState extends State<ChatScreen> {
       itemBuilder: (context, index) {
         final message = _messages[index];
         final isMe = message.senderId == widget.currentUserId;
-        
+
         return _buildChatBubble(message, isMe);
       },
     );
@@ -211,7 +217,8 @@ class _ChatScreenState extends State<ChatScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
-        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isMe)
@@ -231,8 +238,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(16),
                   topRight: const Radius.circular(16),
-                  bottomLeft: isMe ? const Radius.circular(16) : const Radius.circular(4),
-                  bottomRight: isMe ? const Radius.circular(4) : const Radius.circular(16),
+                  bottomLeft: isMe
+                      ? const Radius.circular(16)
+                      : const Radius.circular(4),
+                  bottomRight: isMe
+                      ? const Radius.circular(4)
+                      : const Radius.circular(16),
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -243,10 +254,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 ],
               ),
               child: Column(
-                crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
                   // Only show subject if it's not the auto-generated one
-                  if (message.subject != 'Chat Message' && message.subject.isNotEmpty)
+                  if (message.subject != 'Chat Message' &&
+                      message.subject.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 4),
                       child: Text(
@@ -313,7 +326,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 filled: true,
                 fillColor: Colors.grey[100],
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               ),
               maxLines: null,
               textInputAction: TextInputAction.send,
@@ -331,7 +345,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   ? const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      child: CircularProgressIndicator(
+                          color: Colors.white, strokeWidth: 2),
                     )
                   : const Icon(Icons.send, color: Colors.white),
               onPressed: _isSending ? null : _sendMessage,

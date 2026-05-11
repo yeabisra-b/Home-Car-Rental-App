@@ -4,7 +4,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../services/api_service.dart';
 import '../models/user.dart';
-import '../models/api_response.dart';
 
 class ProfileScreen extends StatefulWidget {
   final Color themeColor;
@@ -99,7 +98,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         await _fetchProfile();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Profile picture updated successfully')),
+            const SnackBar(
+                content: Text('Profile picture updated successfully')),
           );
         }
       } else {
@@ -192,7 +192,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(_error!, style: const TextStyle(color: Colors.red)),
+                          Text(_error!,
+                              style: const TextStyle(color: Colors.red)),
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: _fetchProfile,
@@ -240,9 +241,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               width: double.infinity,
                               height: 50,
                               child: OutlinedButton(
-                                onPressed: _isSaving ? null : _showChangePasswordDialog,
+                                onPressed: _isSaving
+                                    ? null
+                                    : _showChangePasswordDialog,
                                 style: OutlinedButton.styleFrom(
-                                  side: BorderSide(color: widget.themeColor, width: 2),
+                                  side: BorderSide(
+                                      color: widget.themeColor, width: 2),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -272,7 +276,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildProfilePicture() {
-    final initials = '${_user?.firstName?[0] ?? ''}${_user?.lastName?[0] ?? ''}'.toUpperCase();
+    final initials = '${_user?.firstName?[0] ?? ''}${_user?.lastName?[0] ?? ''}'
+        .toUpperCase();
 
     return Stack(
       children: [
@@ -299,16 +304,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       width: 120,
                       height: 120,
                       fit: BoxFit.cover,
-                      placeholder: (context, url) => const CircularProgressIndicator(),
+                      placeholder: (context, url) =>
+                          const CircularProgressIndicator(),
                       errorWidget: (context, url, error) => Text(
                         initials.isNotEmpty ? initials : '?',
-                        style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: widget.themeColor),
+                        style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                            color: widget.themeColor),
                       ),
                     ),
                   )
                 : Text(
                     initials.isNotEmpty ? initials : '?',
-                    style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: widget.themeColor),
+                    style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: widget.themeColor),
                   ),
           ),
         ),
@@ -323,7 +335,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: widget.themeColor,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+              child:
+                  const Icon(Icons.camera_alt, color: Colors.white, size: 20),
             ),
           ),
         ),
@@ -338,7 +351,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SizedBox(height: 12),
         _buildInfoTile('Role', _user?.role ?? '', Icons.badge_outlined),
         const SizedBox(height: 12),
-        _buildInfoTile('Account Status', _user?.accountStatus ?? '', Icons.check_circle_outline),
+        _buildInfoTile('Account Status', _user?.accountStatus ?? '',
+            Icons.check_circle_outline),
       ],
     );
   }
@@ -358,8 +372,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-              Text(value, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
+              Text(label,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+              Text(value,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w500, fontSize: 14)),
             ],
           ),
         ],
@@ -370,13 +387,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildEditableFields() {
     return Column(
       children: [
-        _buildTextField(_firstNameController, 'First Name', Icons.person_outline),
+        _buildTextField(
+            _firstNameController, 'First Name', Icons.person_outline),
         const SizedBox(height: 16),
-        _buildTextField(_middleNameController, 'Middle Name', Icons.person_outline),
+        _buildTextField(
+            _middleNameController, 'Middle Name', Icons.person_outline),
         const SizedBox(height: 16),
         _buildTextField(_lastNameController, 'Last Name', Icons.person_outline),
         const SizedBox(height: 16),
-        _buildTextField(_phoneController, 'Phone Number', Icons.phone_outlined, keyboardType: TextInputType.phone),
+        _buildTextField(_phoneController, 'Phone Number', Icons.phone_outlined,
+            keyboardType: TextInputType.phone),
       ],
     );
   }
@@ -415,7 +435,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 class _ChangePasswordDialog extends StatefulWidget {
   final ApiService apiService;
-  const _ChangePasswordDialog({Key? key, required this.apiService}) : super(key: key);
+  const _ChangePasswordDialog({super.key, required this.apiService});
 
   @override
   State<_ChangePasswordDialog> createState() => _ChangePasswordDialogState();
@@ -426,7 +446,7 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  
+
   bool _isLoading = false;
   bool _obscureOld = true;
   bool _obscureNew = true;
@@ -456,7 +476,8 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
                 decoration: InputDecoration(
                   labelText: 'Current Password',
                   suffixIcon: IconButton(
-                    icon: Icon(_obscureOld ? Icons.visibility_off : Icons.visibility),
+                    icon: Icon(
+                        _obscureOld ? Icons.visibility_off : Icons.visibility),
                     onPressed: () => setState(() => _obscureOld = !_obscureOld),
                   ),
                 ),
@@ -470,7 +491,8 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
                 decoration: InputDecoration(
                   labelText: 'New Password',
                   suffixIcon: IconButton(
-                    icon: Icon(_obscureNew ? Icons.visibility_off : Icons.visibility),
+                    icon: Icon(
+                        _obscureNew ? Icons.visibility_off : Icons.visibility),
                     onPressed: () => setState(() => _obscureNew = !_obscureNew),
                   ),
                 ),
@@ -487,12 +509,16 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
                 decoration: InputDecoration(
                   labelText: 'Confirm Password',
                   suffixIcon: IconButton(
-                    icon: Icon(_obscureConfirm ? Icons.visibility_off : Icons.visibility),
-                    onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                    icon: Icon(_obscureConfirm
+                        ? Icons.visibility_off
+                        : Icons.visibility),
+                    onPressed: () =>
+                        setState(() => _obscureConfirm = !_obscureConfirm),
                   ),
                 ),
                 validator: (value) {
-                  if (value != _newPasswordController.text) return 'Passwords do not match';
+                  if (value != _newPasswordController.text)
+                    return 'Passwords do not match';
                   return null;
                 },
               ),
@@ -515,13 +541,14 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
                     _oldPasswordController.text,
                     _newPasswordController.text,
                   );
-                  
+
                   if (!mounted) return;
 
                   if (response.isSuccess) {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Password updated successfully')),
+                      const SnackBar(
+                          content: Text('Password updated successfully')),
                     );
                   } else {
                     setState(() => _isLoading = false);
@@ -531,7 +558,10 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
                   }
                 },
           child: _isLoading
-              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2))
               : const Text('Update'),
         ),
       ],

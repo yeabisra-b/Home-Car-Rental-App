@@ -5,7 +5,6 @@ import '../services/api_service.dart';
 import '../models/property.dart';
 import '../models/rental_unit.dart';
 import '../models/property_media.dart';
-import '../models/paginated_response.dart';
 
 class TenantBrowseScreen extends StatefulWidget {
   const TenantBrowseScreen({super.key});
@@ -274,10 +273,8 @@ class _TenantBrowseScreenState extends State<TenantBrowseScreen> {
           )
         : null;
 
-    final vacantCount = property.rentalUnits
-            ?.where((u) => u.status == 'VACANT')
-            .length ??
-        0;
+    final vacantCount =
+        property.rentalUnits?.where((u) => u.status == 'VACANT').length ?? 0;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -312,7 +309,8 @@ class _TenantBrowseScreenState extends State<TenantBrowseScreen> {
                         child: const Center(
                             child: CircularProgressIndicator(strokeWidth: 2)),
                       ),
-                      errorWidget: (_, __, ___) => _buildPlaceholderImage(property),
+                      errorWidget: (_, __, ___) =>
+                          _buildPlaceholderImage(property),
                     )
                   : _buildPlaceholderImage(property),
             ),
@@ -340,7 +338,8 @@ class _TenantBrowseScreenState extends State<TenantBrowseScreen> {
                         decoration: BoxDecoration(
                           color: Colors.teal[50],
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.teal.withOpacity(0.3)),
+                          border:
+                              Border.all(color: Colors.teal.withOpacity(0.3)),
                         ),
                         child: Text(
                           property.type,
@@ -411,7 +410,8 @@ class _TenantBrowseScreenState extends State<TenantBrowseScreen> {
         Icon(icon, size: 12, color: color),
         const SizedBox(width: 4),
         Text(label,
-            style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w600)),
+            style: TextStyle(
+                color: color, fontSize: 11, fontWeight: FontWeight.w600)),
       ]),
     );
   }
@@ -450,7 +450,8 @@ class TenantPropertyDetailScreen extends StatelessWidget {
               backgroundColor: Colors.teal,
               icon: const Icon(Icons.chat_bubble_outline, color: Colors.white),
               label: const Text('Contact Owner',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
             )
           : null,
       body: CustomScrollView(
@@ -470,7 +471,8 @@ class TenantPropertyDetailScreen extends StatelessWidget {
                   const SizedBox(height: 20),
                   _buildLocationSection(),
                   const SizedBox(height: 24),
-                  if (vacantUnits.isNotEmpty) _buildAvailableUnitsSection(vacantUnits),
+                  if (vacantUnits.isNotEmpty)
+                    _buildAvailableUnitsSection(vacantUnits),
                   const SizedBox(height: 40),
                 ],
               ),
@@ -606,7 +608,8 @@ class TenantPropertyDetailScreen extends StatelessWidget {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 12),
         Card(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -682,17 +685,16 @@ class TenantPropertyDetailScreen extends StatelessWidget {
               runSpacing: 8,
               children: [
                 if (unit.bedrooms != null)
-                  _buildUnitSpec(Icons.king_bed_outlined,
-                      '${unit.bedrooms} Bed'),
+                  _buildUnitSpec(
+                      Icons.king_bed_outlined, '${unit.bedrooms} Bed'),
                 if (unit.bathrooms != null)
                   _buildUnitSpec(
                       Icons.bathtub_outlined, '${unit.bathrooms} Bath'),
                 if (unit.areaSqMeters != null)
-                  _buildUnitSpec(
-                      Icons.square_foot, '${unit.areaSqMeters} m²'),
+                  _buildUnitSpec(Icons.square_foot, '${unit.areaSqMeters} m²'),
                 if (unit.floorNumber != null)
-                  _buildUnitSpec(Icons.layers_outlined,
-                      'Floor ${unit.floorNumber}'),
+                  _buildUnitSpec(
+                      Icons.layers_outlined, 'Floor ${unit.floorNumber}'),
               ],
             ),
             if (unit.amenities != null && unit.amenities!.isNotEmpty) ...[
@@ -700,14 +702,16 @@ class TenantPropertyDetailScreen extends StatelessWidget {
               Wrap(
                 spacing: 6,
                 runSpacing: 6,
-                children: unit.amenities!.map((a) => Chip(
-                      label: Text(a,
-                          style: const TextStyle(fontSize: 11)),
-                      backgroundColor: Colors.teal[50],
-                      side: BorderSide.none,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      padding: EdgeInsets.zero,
-                    )).toList(),
+                children: unit.amenities!
+                    .map((a) => Chip(
+                          label: Text(a, style: const TextStyle(fontSize: 11)),
+                          backgroundColor: Colors.teal[50],
+                          side: BorderSide.none,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          padding: EdgeInsets.zero,
+                        ))
+                    .toList(),
               ),
             ],
           ],
@@ -722,8 +726,7 @@ class TenantPropertyDetailScreen extends StatelessWidget {
       children: [
         Icon(icon, size: 14, color: Colors.grey[500]),
         const SizedBox(width: 4),
-        Text(label,
-            style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+        Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 13)),
       ],
     );
   }
@@ -756,8 +759,8 @@ class _MessageOwnerSheetState extends State<_MessageOwnerSheet> {
   @override
   void initState() {
     super.initState();
-    _subjectController =
-        TextEditingController(text: 'Inquiry regarding: ${widget.propertyTitle}');
+    _subjectController = TextEditingController(
+        text: 'Inquiry regarding: ${widget.propertyTitle}');
   }
 
   @override
@@ -852,7 +855,8 @@ class _MessageOwnerSheetState extends State<_MessageOwnerSheet> {
                   alignLabelWithHint: true,
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12)),
-                  hintText: 'I would like to schedule a viewing or rent this property...',
+                  hintText:
+                      'I would like to schedule a viewing or rent this property...',
                 ),
                 maxLines: 4,
                 validator: (v) =>
