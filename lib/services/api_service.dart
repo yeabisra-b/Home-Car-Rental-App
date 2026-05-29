@@ -44,6 +44,10 @@ class ApiService {
     };
   }
 
+  String _connectionErrorMessage(Object e) {
+    return 'Connection error. Please check your network and try again.';
+  }
+
   /// Handles the common response logic, parsing JSON and standard errors.
   ApiResponse<T> _processResponse<T>(
     http.Response response,
