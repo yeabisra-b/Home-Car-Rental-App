@@ -18,6 +18,7 @@ import '../models/tenant_stats.dart';
 import '../models/lease.dart';
 import '../models/invoice.dart';
 import '../models/message.dart';
+import '../models/chat_thread.dart';
 
 class ApiService {
   static String get baseUrl => AppConfig.apiBaseUrl;
@@ -785,6 +786,8 @@ class ApiService {
     required String receiverId,
     required String subject,
     required String content,
+    String? propertyId,
+    String? conversationId,
   }) async {
     try {
       final response = await _sendRequest((headers) => http.post(
@@ -794,6 +797,8 @@ class ApiService {
               'receiverId': receiverId,
               'subject': subject,
               'content': content,
+              if (propertyId != null) 'propertyId': propertyId,
+              if (conversationId != null) 'conversationId': conversationId,
             }),
           ));
       return _processResponse<AppMessage>(
@@ -825,6 +830,7 @@ class ApiService {
 
   Future<ApiResponse<PaginatedResponse<AppMessage>>> getMessages({
     String? otherUserId,
+    String? conversationId,
     int page = 1,
     int limit = 30,
   }) async {
@@ -836,6 +842,9 @@ class ApiService {
       if (otherUserId != null) {
         params['otherUserId'] = otherUserId;
       }
+      if (conversationId != null) {
+        params['conversationId'] = conversationId;
+      }
       final uri =
           Uri.parse('$baseUrl/messages').replace(queryParameters: params);
       final response =
@@ -843,6 +852,27 @@ class ApiService {
       return _processResponse<PaginatedResponse<AppMessage>>(
         response,
         (j) => PaginatedResponse.fromJson(j, (m) => AppMessage.fromJson(m)),
+      );
+    } catch (e) {
+      return ApiResponse.error('Connection error: $e');
+    }
+  }
+
+  Future<ApiResponse<List<ChatThread>>> getChatThreads(
+      String currentUserId) async {
+    try {
+      final response = await _sendRequest((headers) => http.get(
+            Uri.parse('$baseUrl/messages/conversations'),
+            headers: headers,
+          ));
+      return _processResponse<List<ChatThread>>(
+        response,
+        (j) =>
+            (j['conversations'] as List<dynamic>?)
+                ?.map((e) => ChatThread.fromJson(
+                    e as Map<String, dynamic>, currentUserId))
+                .toList() ??
+            [],
       );
     } catch (e) {
       return ApiResponse.error('Connection error: $e');

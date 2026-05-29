@@ -10,7 +10,7 @@ import 'register_property.dart';
 import 'owner_property_list.dart';
 import 'profile_screen.dart';
 import 'profile_settings_shells.dart';
-import 'owner_messages_screen.dart';
+import 'inbox_screen.dart';
 
 class OwnerDashboard extends StatefulWidget {
   const OwnerDashboard({super.key});
@@ -156,7 +156,7 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
       case 1:
         return const OwnerPropertyListScreen();
       case 2:
-        return OwnerMessagesScreen(currentUserId: _user?.id);
+        return InboxScreen(currentUserId: _user?.id, primaryColor: Colors.indigo, isSeller: true);
       default:
         return Center(
             child: Text('Screen for index $_selectedIndex coming soon'));

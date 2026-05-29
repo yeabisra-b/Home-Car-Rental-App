@@ -9,7 +9,7 @@ import '../models/invoice.dart';
 import '../models/maintenance_request.dart';
 import '../models/paginated_response.dart';
 import 'profile_screen.dart';
-import 'tenant_messages_screen.dart';
+import 'inbox_screen.dart';
 import 'tenant_browse_screen.dart';
 import 'profile_settings_shells.dart';
 
@@ -253,7 +253,7 @@ class _TenantDashboardState extends State<TenantDashboard> {
     switch (_selectedIndex) {
       case 0: return _buildOverview();
       case 1: return _buildLeasesTab();
-      case 2: return TenantMessagesScreen(currentUserId: _user?.id);
+      case 2: return InboxScreen(currentUserId: _user?.id, primaryColor: Colors.teal, isSeller: false);
       case 3: return const TenantBrowseScreen();
       default: return const SizedBox.shrink();
     }

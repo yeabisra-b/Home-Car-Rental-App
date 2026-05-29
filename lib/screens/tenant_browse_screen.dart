@@ -491,6 +491,7 @@ class TenantPropertyDetailScreen extends StatelessWidget {
       builder: (context) => _MessageOwnerSheet(
         propertyTitle: property.title,
         ownerId: property.ownerId!,
+        propertyId: property.id,
       ),
     );
   }
@@ -739,10 +740,12 @@ class TenantPropertyDetailScreen extends StatelessWidget {
 class _MessageOwnerSheet extends StatefulWidget {
   final String propertyTitle;
   final String ownerId;
+  final String propertyId;
 
   const _MessageOwnerSheet({
     required this.propertyTitle,
     required this.ownerId,
+    required this.propertyId,
   });
 
   @override
@@ -778,6 +781,7 @@ class _MessageOwnerSheetState extends State<_MessageOwnerSheet> {
       receiverId: widget.ownerId,
       subject: _subjectController.text.trim(),
       content: _contentController.text.trim(),
+      propertyId: widget.propertyId,
     );
 
     setState(() => _isSubmitting = false);
