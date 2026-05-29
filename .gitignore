@@ -18,13 +18,13 @@
 .idea/
 .vscode/
 
-# Local Environment Variables
+# Local Environment Variables (never commit real .env files)
 .env
-*.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+# Note: .env.example files ARE committed intentionally - do not add them here
 
 # Root Flutter leftovers
 .dart_tool/
@@ -71,3 +71,16 @@ client/windows/flutter/ephemeral/
 # Symbolication / Obfuscation related
 client/app.*.symbols
 client/app.*.map.json
+
+# Server (Node.js / Express) Ignored Files
+server/node_modules/
+server/dist/
+server/build/
+server/coverage/
+server/.nyc_output/
+server/uploads/
+server/*.tsbuildinfo
+server/npm-debug.log*
+server/yarn-debug.log*
+server/yarn-error.log*
+server/pnpm-debug.log*
