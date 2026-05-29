@@ -149190,9 +149190,18 @@ async function createPropertyForOwner(owner, input) {
       }, { transaction });
     }
     if (input.type === "VEHICLE" && input.vehicleDetails) {
+      const { rentAmount, depositAmount, ...vehicleDbDetails } = input.vehicleDetails;
       await models.PropertyVehicle.create({
         propertyId: property2.id,
-        ...input.vehicleDetails
+        ...vehicleDbDetails
+      }, { transaction });
+      await models.RentalUnit.create({
+        propertyId: property2.id,
+        unitIdentifier: `VEHICLE-${vehicleDbDetails.plateNumber || "UNIT"}`,
+        rentAmount: Number(rentAmount) || 0,
+        depositAmount: depositAmount !== void 0 ? Number(depositAmount) : Number(rentAmount) || 0,
+        status: "VACANT",
+        description: input.description
       }, { transaction });
     }
     if (input.mediaFiles && Array.isArray(input.mediaFiles)) {
@@ -149401,16 +149410,37 @@ async function updatePropertyForUser(user, propertyId, updateData) {
       }
     }
     if (property2.type === "VEHICLE" && vehicleDetails) {
+      const { rentAmount, depositAmount, ...vehicleDbDetails } = vehicleDetails;
       const vehicle = await models.PropertyVehicle.findOne({
         where: { propertyId: property2.id },
         transaction
       });
       if (vehicle) {
-        await vehicle.update(vehicleDetails, { transaction });
+        await vehicle.update(vehicleDbDetails, { transaction });
       } else {
         await models.PropertyVehicle.create({
           propertyId: property2.id,
-          ...vehicleDetails
+          ...vehicleDbDetails
+        }, { transaction });
+      }
+      const rentalUnit = await models.RentalUnit.findOne({
+        where: { propertyId: property2.id },
+        transaction
+      });
+      if (rentalUnit) {
+        await rentalUnit.update({
+          rentAmount: rentAmount !== void 0 ? Number(rentAmount) : rentalUnit.rentAmount,
+          depositAmount: depositAmount !== void 0 ? Number(depositAmount) : rentalUnit.depositAmount,
+          unitIdentifier: `VEHICLE-${vehicleDbDetails.plateNumber || rentalUnit.unitIdentifier.split("-").pop()}`
+        }, { transaction });
+      } else {
+        await models.RentalUnit.create({
+          propertyId: property2.id,
+          unitIdentifier: `VEHICLE-${vehicleDbDetails.plateNumber || "UNIT"}`,
+          rentAmount: Number(rentAmount) || 0,
+          depositAmount: depositAmount !== void 0 ? Number(depositAmount) : Number(rentAmount) || 0,
+          status: "VACANT",
+          description: property2.description
         }, { transaction });
       }
     }
