@@ -1,4 +1,4 @@
-# Miscellaneous
+# Miscellaneous & System Files
 *.class
 *.log
 *.pyc
@@ -10,39 +10,70 @@
 .history
 .svn/
 .swiftpm/
-migrate_working_dir/
 
-# IntelliJ related
+# IntelliJ / vscode
 *.iml
 *.ipr
 *.iws
 .idea/
+.vscode/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
-/coverage/
-
-# Symbolication related
-app.*.symbols
-
-# Obfuscation related
-app.*.map.json
-
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
-
-# Environment config
+# Local Environment Variables
 .env
+*.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Frontend (Flutter) Ignored Files
+frontend/.dart_tool/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/.pub-cache/
+frontend/.pub/
+frontend/build/
+frontend/coverage/
+frontend/frontend.iml
+
+# Frontend Android Studio & Gradle
+frontend/android/.gradle/
+frontend/android/.kotlin/
+frontend/android/local.properties
+frontend/android/app/debug/
+frontend/android/app/profile/
+frontend/android/app/release/
+frontend/android/frontend_android.iml
+
+# Frontend iOS / macOS Ephemeral & Build files
+frontend/ios/Flutter/.last_build_id
+frontend/ios/Flutter/Generated.xcconfig
+frontend/ios/Flutter/flutter_export_environment.sh
+frontend/ios/Runner/GeneratedPluginRegistrant.h
+frontend/ios/Runner/GeneratedPluginRegistrant.m
+frontend/macos/Flutter/ephemeral/
+frontend/macos/Flutter/GeneratedPluginRegistrant.swift
+
+# Frontend Linux Ephemeral & Build files
+frontend/linux/flutter/ephemeral/
+
+# Frontend Windows Ephemeral & Build files
+frontend/windows/flutter/ephemeral/
+
+# Symbolication / Obfuscation related
+frontend/app.*.symbols
+frontend/app.*.map.json
+
+# Backend (Node.js / Express) Ignored Files
+backend/node_modules/
+backend/dist/
+backend/build/
+backend/coverage/
+backend/.nyc_output/
+backend/uploads/
+backend/*.tsbuildinfo
+backend/npm-debug.log*
+backend/yarn-debug.log*
+backend/yarn-error.log*
+backend/pnpm-debug.log*
