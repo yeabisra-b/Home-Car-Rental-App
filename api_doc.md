@@ -114,7 +114,8 @@ Request body:
   "middleName": "Leslie",
   "lastName": "Doe",
   "phoneNumber": "+251911223344",
-  "role": "OWNER"
+  "role": "OWNER",
+  "isContactInfoVisible": true
 }
 ```
 
@@ -123,6 +124,7 @@ Rules:
 - Public registration only allows `OWNER` or `TENANT`.
 - If `role` is omitted, default to `TENANT`.
 - Email must be unique.
+- `isContactInfoVisible` is optional (defaults to `true`). When set to `false`, the user's contact information is masked on public property listings.
 
 Response `201 Created`:
 
@@ -137,6 +139,7 @@ Response `201 Created`:
     "phoneNumber": "+251911223344",
     "role": "OWNER",
     "accountStatus": "ACTIVE",
+    "isContactInfoVisible": true,
     "profilePictureUrl": null,
     "createdAt": "2026-03-26T09:30:00Z"
   },
@@ -168,7 +171,8 @@ Response `200 OK`:
     "id": "uuid",
     "email": "owner@example.com",
     "role": "OWNER",
-    "accountStatus": "ACTIVE"
+    "accountStatus": "ACTIVE",
+    "isContactInfoVisible": true
   },
   "accessToken": "jwt_access_token",
   "refreshToken": "jwt_refresh_token"
@@ -231,6 +235,7 @@ Response `200 OK`:
     "phoneNumber": "+251911223344",
     "role": "OWNER",
     "accountStatus": "ACTIVE",
+    "isContactInfoVisible": true,
     "profilePictureUrl": "https://...",
     "createdAt": "2026-03-26T09:30:00Z"
   }
@@ -253,7 +258,8 @@ Request body:
   "middleName": "Middle",
   "lastName": "Name",
   "phoneNumber": "+251900000000",
-  "profilePictureUrl": "https://..."
+  "profilePictureUrl": "https://...",
+  "isContactInfoVisible": false
 }
 ```
 
@@ -266,12 +272,36 @@ Response `200 OK`:
     "email": "owner@example.com",
     "firstName": "New",
     "middleName": "Middle",
-    "lastName": "Name"
+    "lastName": "Name",
+    "isContactInfoVisible": false
   }
 }
 ```
 
-### 1.7 Upload profile picture
+### 1.7 Change password
+
+**PUT** `/auth/change-password`
+
+Roles: OWNER, TENANT, ADMIN
+
+Request body:
+
+```json
+{
+  "currentPassword": "oldpass123",
+  "newPassword": "newpass456"
+}
+```
+
+Response `200 OK`:
+
+```json
+{
+  "message": "Password changed successfully"
+}
+```
+
+### 1.8 Upload profile picture
 
 **POST** `/upload/user-profile/:userId`
 
@@ -295,13 +325,43 @@ Response `200 OK`:
 }
 ```
 
-### 1.8 Download profile picture
+### 1.9 Download profile picture
 
 **GET** `/download/user-profile/:userId`
 
 Roles: Public
 
 Returns the file content.
+
+### 1.10 Switch user role
+
+**POST** `/auth/switch-role`
+
+Roles: OWNER, TENANT
+
+Switches the active role of the authenticated user between `OWNER` and `TENANT`.
+
+Request body: None
+
+Response `200 OK`:
+
+```json
+{
+  "user": {
+    "id": "uuid",
+    "email": "owner@example.com",
+    "firstName": "John",
+    "middleName": "Leslie",
+    "lastName": "Doe",
+    "phoneNumber": "+251911223344",
+    "role": "TENANT",
+    "accountStatus": "ACTIVE",
+    "isContactInfoVisible": true,
+    "profilePictureUrl": null,
+    "createdAt": "2026-03-26T09:30:00Z"
+  }
+}
+```
 
 ## 2. Properties
 
@@ -438,6 +498,10 @@ Response `200 OK`:
 
 Roles: OWNER, TENANT, ADMIN
 
+Rules:
+
+- **Contact Privacy Masking:** If the property owner has configured their profile with `"isContactInfoVisible": false`, and the requestor is *neither* the owner of this property nor an ADMIN, the owner's `email` and `phoneNumber` fields in the response `owner` block will be masked and returned as empty strings (`""`).
+
 Response `200 OK`:
 
 ```json
@@ -448,7 +512,9 @@ Response `200 OK`:
       "id": "uuid",
       "firstName": "John",
       "lastName": "Doe",
-      "email": "owner@example.com"
+      "email": "owner@example.com",
+      "phoneNumber": "+251911223344",
+      "isContactInfoVisible": true
     },
     "media": [],
     "rentalUnits": [],
@@ -794,7 +860,61 @@ Response `200 OK`:
 }
 ```
 
-### 4.4 Upload signed lease document
+### 4.4 Sign lease (tenant)
+
+**POST** `/leases/:leaseId/sign`
+
+Roles: TENANT
+
+Content type: `multipart/form-data`
+
+Form fields:
+
+- `file` required PDF of signed lease
+
+Rules:
+
+- Only the lease tenant may sign.
+- Lease must be in `DRAFT` status.
+- On success, lease transitions to `AWAITING_APPROVAL` and unit is marked `OCCUPIED`.
+
+Response `200 OK`:
+
+```json
+{
+  "lease": {
+    "id": "uuid",
+    "status": "AWAITING_APPROVAL"
+  },
+  "message": "Lease signed successfully"
+}
+```
+
+### 4.5 Approve lease (owner)
+
+**POST** `/leases/:leaseId/approve`
+
+Roles: OWNER
+
+Rules:
+
+- Only the property owner may approve.
+- Lease must be in `AWAITING_APPROVAL` status.
+- On success, lease transitions to `ACTIVE`.
+
+Response `200 OK`:
+
+```json
+{
+  "lease": {
+    "id": "uuid",
+    "status": "ACTIVE"
+  },
+  "message": "Lease approved and activated successfully"
+}
+```
+
+### 4.6 Upload signed lease document
 
 **POST** `/upload/lease-document/:leaseId`
 
@@ -809,7 +929,7 @@ Form fields:
 
 Rules:
 
-- Uploading the first signed document activates the lease and marks the unit as occupied.
+- Uploading a document records it on the lease without changing status.
 
 Response `201 Created`:
 
@@ -822,13 +942,13 @@ Response `201 Created`:
   },
   "lease": {
     "id": "uuid",
-    "status": "ACTIVE"
+    "status": "DRAFT"
   },
   "fileName": "sanitized-name-timestamp.pdf"
 }
 ```
 
-### 4.5 Download lease document
+### 4.7 Download lease document
 
 **GET** `/download/lease-document/:documentId`
 
@@ -836,7 +956,7 @@ Roles: OWNER if they own the unit, TENANT if it is their lease, ADMIN
 
 Returns the file content.
 
-### 4.6 Terminate lease by tenant
+### 4.8 Terminate lease by tenant
 
 **POST** `/leases/:leaseId/terminate`
 
@@ -867,7 +987,7 @@ Response `200 OK`:
 }
 ```
 
-### 4.7 Submit move-out notice
+### 4.9 Submit move-out notice
 
 **POST** `/leases/:leaseId/move-out-notice`
 
@@ -899,7 +1019,7 @@ Response `200 OK`:
 }
 ```
 
-### 4.8 Remove tenant from unit
+### 4.10 Remove tenant from unit
 
 **POST** `/leases/:leaseId/remove-tenant`
 
@@ -1450,9 +1570,263 @@ Response `200 OK`:
 }
 ```
 
-## 8. Dashboard and Reports
+## 8. Tenant Applications
 
-### 8.1 Get owner dashboard stats
+### 8.1 Submit application
+
+**POST** `/applications`
+
+Roles: TENANT
+
+Request body:
+
+```json
+{
+  "unitId": "uuid",
+  "message": "Interested in this unit!"
+}
+```
+
+Rules:
+
+- Only TENANT role may submit.
+- Only one pending application per unit per tenant.
+- Unit must be vacant with no active/draft lease.
+
+Response `201 Created`:
+
+```json
+{
+  "application": {
+    "id": "uuid",
+    "unitId": "uuid",
+    "tenantId": "uuid",
+    "status": "PENDING",
+    "message": "Interested in this unit!"
+  }
+}
+```
+
+### 8.2 List applications
+
+**GET** `/applications`
+
+Roles: OWNER, TENANT, ADMIN
+
+Role behavior:
+
+- TENANT sees own applications
+- OWNER sees applications for their properties
+- ADMIN sees all
+
+### 8.3 Get application
+
+**GET** `/applications/:id`
+
+Roles: OWNER, TENANT, ADMIN
+
+### 8.4 Accept application
+
+**POST** `/applications/:id/accept`
+
+Roles: OWNER
+
+Rules:
+
+- Only the property owner may accept.
+- Application must be in `PENDING` status.
+- Creates a `DRAFT` lease and marks unit `OCCUPIED`.
+
+Response `200 OK`:
+
+```json
+{
+  "lease": {
+    "id": "uuid",
+    "unitId": "uuid",
+    "tenantId": "uuid",
+    "status": "DRAFT"
+  },
+  "application": {
+    "id": "uuid",
+    "status": "ACCEPTED"
+  }
+}
+```
+
+### 8.5 Decline application
+
+**POST** `/applications/:id/decline`
+
+Roles: OWNER
+
+Request body:
+
+```json
+{
+  "reason": "Unit already reserved"
+}
+```
+
+Response `200 OK`:
+
+```json
+{
+  "application": {
+    "id": "uuid",
+    "status": "DECLINED"
+  }
+}
+```
+
+## 9. Incident Reports
+
+### 9.1 Create incident report
+
+**POST** `/incidents`
+
+Roles: OWNER, TENANT, ADMIN
+
+Request body:
+
+```json
+{
+  "reportType": "COMPLAINT",
+  "incidentType": "NOISE",
+  "urgency": "MEDIUM",
+  "description": "Loud music after midnight",
+  "location": "Building A, Floor 3",
+  "incidentDate": "2026-05-15",
+  "incidentTime": "23:30",
+  "witnesses": "Neighbor in 3B",
+  "againstPerson": "Tenant in 3C",
+  "isAnonymous": false
+}
+```
+
+Rules:
+
+- `reportType`: `COMPLAINT` or `HELP_REQUEST`
+- `incidentType`: `VIOLENCE`, `HARASSMENT`, `THREAT`, `DISCRIMINATION`, `THEFT`, `DAMAGE`, `NOISE`, `OTHER`
+- `urgency`: `EMERGENCY`, `HIGH`, `MEDIUM`, `LOW`
+- New reports start in `OPEN` status.
+
+Response `201 Created`:
+
+```json
+{
+  "report": {
+    "id": "uuid",
+    "reporterId": "uuid",
+    "reportType": "COMPLAINT",
+    "incidentType": "NOISE",
+    "urgency": "MEDIUM",
+    "status": "OPEN"
+  }
+}
+```
+
+### 9.2 List own incident reports
+
+**GET** `/incidents`
+
+Roles: OWNER, TENANT, ADMIN
+
+Query parameters:
+
+- `status`
+- `urgency`
+- `page`
+- `limit`
+
+Role behavior:
+
+- Users see only their own reports.
+- Admin sees all reports via `/admin/incidents`.
+
+### 9.3 Get incident report
+
+**GET** `/incidents/:id`
+
+Roles: OWNER, TENANT, ADMIN
+
+Response `200 OK`:
+
+```json
+{
+  "report": {
+    "id": "uuid",
+    "reporterId": "uuid",
+    "reportType": "COMPLAINT",
+    "incidentType": "NOISE",
+    "status": "OPEN",
+    "evidence": []
+  }
+}
+```
+
+### 9.4 Upload incident evidence
+
+**POST** `/upload/incident-evidence/:reportId`
+
+Roles: OWNER, TENANT, ADMIN
+
+Content type: `multipart/form-data`
+
+### 9.5 Download incident evidence
+
+**GET** `/download/incident-evidence/:evidenceId`
+
+Roles: OWNER, TENANT, ADMIN (for own reports or with permission)
+
+### 9.6 List all incidents (Admin)
+
+**GET** `/admin/incidents`
+
+Roles: ADMIN
+
+### 9.7 Get incident with full details (Admin)
+
+**GET** `/admin/incidents/:id`
+
+Roles: ADMIN
+
+### 9.8 Update incident status (Admin)
+
+**PATCH** `/admin/incidents/:id/status`
+
+Roles: ADMIN
+
+Request body:
+
+```json
+{
+  "status": "RESOLVED",
+  "adminNote": "Issue resolved after investigation"
+}
+```
+
+Allowed status values: `OPEN`, `UNDER_REVIEW`, `RESOLVED`, `DISMISSED`
+
+Response `200 OK`:
+
+```json
+{
+  "report": {
+    "id": "uuid",
+    "status": "RESOLVED",
+    "adminNote": "Issue resolved after investigation"
+  }
+}
+```
+
+## 10. Dashboard and Reports
+
+### 10.1 Get owner dashboard stats
+
+**GET** `/dashboard/owner/stats`
+
+Roles: OWNER, ADMIN
 
 **GET** `/dashboard/owner/stats`
 
@@ -1471,11 +1845,11 @@ Response `200 OK`:
 }
 ```
 
-### 8.2 Get tenant dashboard stats
+### 10.2 Get tenant dashboard stats
 
 **GET** `/dashboard/tenant/stats`
 
-Roles: TENANT
+Roles: TENANT, ADMIN
 
 Response `200 OK`:
 
@@ -1484,52 +1858,84 @@ Response `200 OK`:
   "currentRentAmount": 4250,
   "daysUntilDue": 5,
   "pendingRequestsCount": 2,
-  "unreadMessagesCount": 3
+  "unreadMessagesCount": 3,
+  "activeLease": {}
 }
 ```
 
-### 8.3 Get cash flow forecast
+### 10.3 Get recent activities
 
-**GET** `/reports/cash-flow`
+**GET** `/dashboard/activities`
 
-Roles: OWNER, ADMIN
+Roles: OWNER, TENANT, ADMIN
 
 Response `200 OK`:
 
 ```json
 {
-  "data": [
-    { "month": "MAY", "amount": 12000 },
-    { "month": "JUN", "amount": 14000 }
-  ]
-}
-```
-
-### 8.4 Get property performance
-
-**GET** `/reports/property-performance`
-
-Roles: OWNER, ADMIN
-
-Response `200 OK`:
-
-```json
-{
-  "data": [
+  "activities": [
     {
-      "propertyId": "uuid",
-      "name": "The Sterling Heights",
-      "revenue": 142500,
-      "occupancy": 100,
-      "change": 4.2
+      "id": "uuid",
+      "type": "LOGIN",
+      "description": "User logged in",
+      "createdAt": "2026-03-26T09:30:00Z"
     }
   ]
 }
 ```
 
-## 9. Admin
+## 11. Reports
 
-### 8.1 List users
+### 11.1 Get cash flow report
+
+**GET** `/reports/cash-flow`
+
+Roles: OWNER, ADMIN
+
+Query parameters:
+
+- `startDate` (required) - ISO date
+- `endDate` (required) - ISO date
+- `propertyId` (optional) - UUID
+
+Response `200 OK`:
+
+```json
+{
+  "report": {
+    "totalRevenue": 12000,
+    "totalExpenses": 2000,
+    "netCashFlow": 10000,
+    "periodStart": "2026-01-01",
+    "periodEnd": "2026-12-31"
+  }
+}
+```
+
+### 11.2 Get property performance
+
+**GET** `/reports/property/:propertyId`
+
+Roles: OWNER, ADMIN
+
+Response `200 OK`:
+
+```json
+{
+  "stats": {
+    "propertyId": "uuid",
+    "name": "Sunrise Apartments",
+    "totalUnits": 20,
+    "occupiedUnits": 18,
+    "occupancyRate": 90,
+    "monthlyRevenue": 90000
+  }
+}
+```
+
+## 12. Admin
+
+### 12.1 List users
 
 **GET** `/admin/users`
 
@@ -1542,7 +1948,25 @@ Query parameters:
 - `page`
 - `limit`
 
-### 8.2 Remove user
+### 12.2 Update user status
+
+**PUT** `/admin/users/:userId/status`
+
+Roles: ADMIN
+
+Request body:
+
+```json
+{
+  "accountStatus": "SUSPENDED"
+}
+```
+
+Allowed values: `ACTIVE`, `INACTIVE`, `SUSPENDED`
+
+Response `200 OK`
+
+### 12.3 Remove user
 
 **DELETE** `/admin/users/:userId`
 
@@ -1551,10 +1975,40 @@ Roles: ADMIN
 Rules:
 
 - Reject removal when the user still owns active dependencies that the system is not prepared to cascade safely.
+- Admin cannot delete their own account.
 
 Response `204 No Content`
 
-### 8.3 Create admin account
+### 12.4 Bulk update user status
+
+**POST** `/admin/users/bulk-status`
+
+Roles: ADMIN
+
+Request body:
+
+```json
+{
+  "userIds": ["uuid1", "uuid2"],
+  "accountStatus": "ACTIVE"
+}
+```
+
+### 12.5 Bulk delete users
+
+**POST** `/admin/users/bulk-delete`
+
+Roles: ADMIN
+
+Request body:
+
+```json
+{
+  "userIds": ["uuid1", "uuid2"]
+}
+```
+
+### 12.6 Create admin account
 
 **POST** `/admin/create-admin`
 
@@ -1596,27 +2050,209 @@ Response `201 Created`:
 }
 ```
 
-## 9. Deferred From Short-Build MVP
+### 12.7 List all properties (Admin)
+
+**GET** `/admin/properties`
+
+Roles: ADMIN
+
+### 12.8 Bulk update property status
+
+**POST** `/admin/properties/bulk-status`
+
+Roles: ADMIN
+
+Request body:
+
+```json
+{
+  "propertyIds": ["uuid1", "uuid2"],
+  "status": "ACTIVE"
+}
+```
+
+### 12.9 Bulk delete properties
+
+**POST** `/admin/properties/bulk-delete`
+
+Roles: ADMIN
+
+Request body:
+
+```json
+{
+  "propertyIds": ["uuid1", "uuid2"]
+}
+```
+
+### 12.10 List all leases (Admin)
+
+**GET** `/admin/leases`
+
+Roles: ADMIN
+
+### 12.11 Bulk update lease status
+
+**POST** `/admin/leases/bulk-status`
+
+Roles: ADMIN
+
+Request body:
+
+```json
+{
+  "leaseIds": ["uuid1", "uuid2"],
+  "status": "TERMINATED"
+}
+```
+
+### 12.12 List all invoices (Admin)
+
+**GET** `/admin/invoices`
+
+Roles: ADMIN
+
+### 12.13 List all maintenance requests (Admin)
+
+**GET** `/admin/maintenance`
+
+Roles: ADMIN
+
+### 12.14 List all messages (Admin)
+
+**GET** `/admin/messages`
+
+Roles: ADMIN
+
+### 12.15 List all notifications (Admin)
+
+**GET** `/admin/notifications`
+
+Roles: ADMIN
+
+### 12.16 List all incidents (Admin)
+
+**GET** `/admin/incidents`
+
+Roles: ADMIN
+
+### 12.17 Get incident details (Admin)
+
+**GET** `/admin/incidents/:id`
+
+Roles: ADMIN
+
+### 12.18 Update incident status (Admin)
+
+**PATCH** `/admin/incidents/:id/status`
+
+Roles: ADMIN
+
+## 13. File Upload
+
+### 13.1 Generic single file upload
+
+**POST** `/file-upload/upload`
+
+Roles: OWNER, TENANT, ADMIN
+
+Content type: `multipart/form-data`
+
+Form fields:
+
+- `file` required
+
+Response `201 Created`:
+
+```json
+{
+  "fileName": "sanitized-name-timestamp.ext"
+}
+```
+
+### 13.2 Generic multiple files upload
+
+**POST** `/file-upload/upload/multiple`
+
+Roles: OWNER, TENANT, ADMIN
+
+Content type: `multipart/form-data`
+
+Form fields:
+
+- `files` required (multiple)
+
+Response `201 Created`:
+
+```json
+[
+  { "fileName": "file1.jpg" },
+  { "fileName": "file2.jpg" }
+]
+```
+
+### 13.3 Serve file
+
+**GET** `/file-upload/:fileName`
+
+Roles: Public (with optional auth)
+
+### 13.4 Download file
+
+**GET** `/file-upload/download/:fileName`
+
+Roles: Public (with optional auth)
+
+## 14. Message Attachment Upload
+
+### 14.1 Upload message attachment
+
+**POST** `/upload/message-attachment`
+
+Roles: OWNER, TENANT, ADMIN
+
+Content type: `multipart/form-data`
+
+Form fields:
+
+- `file` required
+
+Response `200 OK`:
+
+```json
+{
+  "fileName": "sanitized-name-timestamp.jpg",
+  "filePath": "/uploads/properties/sanitized-name-timestamp.jpg",
+  "fileUrl": "/download/file-upload/sanitized-name-timestamp.jpg"
+}
+```
+
+## 15. Deferred From Short-Build MVP
 
 The following requirement from the PDF is acknowledged but intentionally deferred:
 
 - User reports and moderation workflows
 - `GET /admin/reports`
-- Report submission endpoints
+- Report submission endpoints (beyond incident reports)
 - Ban or suspension workflows beyond existing account status administration
 
 These should not block frontend and backend parallel development for the MVP.
 
-## 10. MVP Coverage Checklist
+## 16. MVP Coverage Checklist
 
 This contract now covers the non-deferred project use cases:
 
 - Owner and tenant registration and login
-- Admin bootstrap and user listing/removal
+- Admin bootstrap and user listing/removal with bulk operations
 - Property registration, editing, deletion, and media upload/download
 - Rental unit creation, updating, deletion, and search
-- Lease creation, viewing, signed document upload/download, tenant notice, termination, and owner removal
+- Lease creation, tenant sign, owner approval, document upload/download, move-out notice, termination, and owner removal
+- Tenant applications for rental units with accept/decline
 - Monthly invoice generation, receipt upload/download, payment review, and overdue reminders
 - Maintenance request submission, evidence upload/download, and owner status updates
-- Owner-tenant messaging, announcements, and notifications
+- Incident reports with evidence upload, admin moderation
+- Owner-tenant messaging, conversations, announcements, and notifications
+- Dashboard statistics for owners and tenants, recent activities
+- Cash flow and property performance reports
+- Generic file upload/download utilities
 - User profile picture upload and download
