@@ -27,57 +27,51 @@ project Rpms/
 
 ---
 
-### 1. Clone the Repository
+### ⚡ Quick Setup (recommended)
+
+After cloning, run the one-shot setup script from the repo root:
 
 ```bash
 git clone git@github.com:yeabisra-b/Mobile-App-Project-.git
 cd "Mobile-App-Project-"
+bash setup.sh
 ```
+
+This script will:
+- Copy `.env.example → .env` for both `frontend/` and `backend/`
+- Run `flutter pub get` and `npm install` automatically
+
+Then edit `backend/.env` to fill in your real PostgreSQL password and JWT secrets (see [Environment Variables Reference](#environment-variables-reference) below).
 
 ---
 
-### 2. Backend Setup
+### Manual Setup
+
+#### 1. Backend
 
 ```bash
 cd backend
-
-# Install dependencies
 npm install
-
-# Set up environment variables
 cp .env.example .env
-# Edit .env and fill in your PostgreSQL credentials and JWT secrets
+# Edit .env — fill in DB_PASSWORD, JWT_ACCESS_SECRET, JWT_REFRESH_SECRET
 ```
 
-**Generate JWT secrets** (run once):
+**Generate JWT secrets:**
 ```bash
 node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
-Copy the output into `JWT_ACCESS_SECRET` and run again for `JWT_REFRESH_SECRET`.
+Run twice — use the two outputs as `JWT_ACCESS_SECRET` and `JWT_REFRESH_SECRET`.
 
-**Start the backend dev server:**
 ```bash
-npm run dev
-# API will be available at http://localhost:3000
+npm run dev   # API available at http://localhost:3000
 ```
 
----
-
-### 3. Frontend Setup
+#### 2. Frontend
 
 ```bash
 cd frontend
-
-# Install Flutter dependencies
 flutter pub get
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env if your backend runs on a different host/port
-```
-
-**Run the Flutter app:**
-```bash
+cp .env.example .env   # adjust API_BASE_URL if needed
 flutter run
 ```
 
