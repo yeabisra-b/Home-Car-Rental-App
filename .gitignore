@@ -21,59 +21,53 @@
 # Local Environment Variables
 .env
 *.env
-.env.*
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# Frontend (Flutter) Ignored Files
-frontend/.dart_tool/
-frontend/.flutter-plugins
-frontend/.flutter-plugins-dependencies
-frontend/.pub-cache/
-frontend/.pub/
-frontend/build/
-frontend/coverage/
-frontend/frontend.iml
+# Root Flutter leftovers
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+build/
 
-# Frontend Android Studio & Gradle
-frontend/android/.gradle/
-frontend/android/.kotlin/
-frontend/android/local.properties
-frontend/android/app/debug/
-frontend/android/app/profile/
-frontend/android/app/release/
-frontend/android/frontend_android.iml
+# Client (Flutter) Ignored Files
+client/.dart_tool/
+client/.flutter-plugins
+client/.flutter-plugins-dependencies
+client/.pub-cache/
+client/.pub/
+client/build/
+client/coverage/
+client/*.iml
 
-# Frontend iOS / macOS Ephemeral & Build files
-frontend/ios/Flutter/.last_build_id
-frontend/ios/Flutter/Generated.xcconfig
-frontend/ios/Flutter/flutter_export_environment.sh
-frontend/ios/Runner/GeneratedPluginRegistrant.h
-frontend/ios/Runner/GeneratedPluginRegistrant.m
-frontend/macos/Flutter/ephemeral/
-frontend/macos/Flutter/GeneratedPluginRegistrant.swift
+# Client Android Studio & Gradle
+client/android/.gradle/
+client/android/.kotlin/
+client/android/local.properties
+client/android/app/debug/
+client/android/app/profile/
+client/android/app/release/
+client/android/*.iml
 
-# Frontend Linux Ephemeral & Build files
-frontend/linux/flutter/ephemeral/
+# Client iOS / macOS Ephemeral & Build files
+client/ios/Flutter/.last_build_id
+client/ios/Flutter/Generated.xcconfig
+client/ios/Flutter/flutter_export_environment.sh
+client/ios/Runner/GeneratedPluginRegistrant.h
+client/ios/Runner/GeneratedPluginRegistrant.m
+client/macos/Flutter/ephemeral/
+client/macos/Flutter/GeneratedPluginRegistrant.swift
 
-# Frontend Windows Ephemeral & Build files
-frontend/windows/flutter/ephemeral/
+# Client Linux Ephemeral & Build files
+client/linux/flutter/ephemeral/
+
+# Client Windows Ephemeral & Build files
+client/windows/flutter/ephemeral/
 
 # Symbolication / Obfuscation related
-frontend/app.*.symbols
-frontend/app.*.map.json
-
-# Backend (Node.js / Express) Ignored Files
-backend/node_modules/
-backend/dist/
-backend/build/
-backend/coverage/
-backend/.nyc_output/
-backend/uploads/
-backend/*.tsbuildinfo
-backend/npm-debug.log*
-backend/yarn-debug.log*
-backend/yarn-error.log*
-backend/pnpm-debug.log*
+client/app.*.symbols
+client/app.*.map.json
