@@ -514,8 +514,10 @@ class _RegisterPropertyScreenState extends State<RegisterPropertyScreen> {
         _responsiveRow(
           PropertyTextField(
             controller: _engineCapacityController,
-            label: 'Engine Cap. (Optional)',
+            label: 'Engine Cap.',
             icon: Icons.speed,
+            isRequired: true,
+            validator: (val) => val == null || val.trim().isEmpty ? 'Engine capacity is required' : null,
           ),
           PropertyTextField(
             controller: _mileageController,
