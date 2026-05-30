@@ -824,7 +824,7 @@ class ApiService {
       return _processResponse<List<ConversationSummary>>(
         response,
         (j) =>
-            (j['conversations'] as List<dynamic>?)
+            ((j['data'] ?? j['conversations']) as List<dynamic>?)
                 ?.map((e) => ConversationSummary.fromJson(e, currentUserId))
                 .toList() ??
             [],

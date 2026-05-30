@@ -71,6 +71,17 @@ class ConversationSummary {
   });
 
   factory ConversationSummary.fromJson(Map<String, dynamic> json, String currentUserId) {
+    if (json.containsKey('user')) {
+      return ConversationSummary(
+        id: json['id']?.toString() ?? '',
+        otherUser: User.fromJson(json['user']),
+        propertyTitle: json['propertyTitle']?.toString() ?? '',
+        lastMessage: json['lastMessage']?.toString() ?? 'No messages yet',
+        time: json['time'] != null ? DateTime.parse(json['time']).toUtc() : DateTime.now().toUtc(),
+        unread: json['unread'] == true,
+      );
+    }
+
     // Resolve other user from participantA or participantB
     final participantA = json['participantA'];
     final participantB = json['participantB'];
