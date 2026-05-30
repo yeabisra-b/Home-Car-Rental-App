@@ -26,53 +26,43 @@
 .env.production.local
 # Note: .env.example files ARE committed intentionally - do not add them here
 
-# Root Flutter leftovers
+# Root Flutter & Platform Ephemeral Files
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
 build/
+coverage/
+*.symbols
+*.map.json
 
-# Client (Flutter) Ignored Files
-client/.dart_tool/
-client/.flutter-plugins
-client/.flutter-plugins-dependencies
-client/.pub-cache/
-client/.pub/
-client/build/
-client/coverage/
-client/*.iml
+# Android Studio & Gradle
+android/.gradle/
+android/.kotlin/
+android/local.properties
+android/app/debug/
+android/app/profile/
+android/app/release/
+android/*.iml
 
-# Client Android Studio & Gradle
-client/android/.gradle/
-client/android/.kotlin/
-client/android/local.properties
-client/android/app/debug/
-client/android/app/profile/
-client/android/app/release/
-client/android/*.iml
+# iOS / macOS Ephemeral & Build files
+ios/Flutter/.last_build_id
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/Runner/GeneratedPluginRegistrant.h
+ios/Runner/GeneratedPluginRegistrant.m
+macos/Flutter/ephemeral/
+macos/Flutter/GeneratedPluginRegistrant.swift
 
-# Client iOS / macOS Ephemeral & Build files
-client/ios/Flutter/.last_build_id
-client/ios/Flutter/Generated.xcconfig
-client/ios/Flutter/flutter_export_environment.sh
-client/ios/Runner/GeneratedPluginRegistrant.h
-client/ios/Runner/GeneratedPluginRegistrant.m
-client/macos/Flutter/ephemeral/
-client/macos/Flutter/GeneratedPluginRegistrant.swift
+# Linux Ephemeral & Build files
+linux/flutter/ephemeral/
 
-# Client Linux Ephemeral & Build files
-client/linux/flutter/ephemeral/
+# Windows Ephemeral & Build files
+windows/flutter/ephemeral/
 
-# Client Windows Ephemeral & Build files
-client/windows/flutter/ephemeral/
-
-# Symbolication / Obfuscation related
-client/app.*.symbols
-client/app.*.map.json
-
-# Server (Node.js / Express) Ignored Files
+# Legacy paths (for reference or backward compatibility)
+client/
 server/node_modules/
 server/dist/
 server/build/
