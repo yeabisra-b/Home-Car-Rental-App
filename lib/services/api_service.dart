@@ -37,6 +37,12 @@ class ApiService {
     return await _getHeaders();
   }
 
+  Future<Map<String, String>> getImageAuthHeaders() async {
+    final headers = await _getHeaders();
+    headers.remove('Content-Type');
+    return headers;
+  }
+
   Future<Map<String, String>> _getHeaders() async {
     final token = await _getToken();
     return {
@@ -981,6 +987,146 @@ class ApiService {
             }),
           ));
       return _processResponse<Lease>(response, (j) => Lease.fromJson(j));
+    } catch (e) {
+      return ApiResponse.error('Connection error: $e');
+    }
+  }
+
+  // --- File Upload & Download URLs ---
+
+  static String getUserProfileUrl(String userId) =>
+      '$baseUrl/download/user-profile/$userId';
+  static String getPropertyMediaUrl(String mediaId) =>
+      '$baseUrl/download/property-media/$mediaId';
+  static String getLeaseDocumentUrl(String documentId) =>
+      '$baseUrl/download/lease-document/$documentId';
+  static String getPaymentReceiptUrl(String receiptId) =>
+      '$baseUrl/download/payment-receipt/$receiptId';
+  static String getMaintenanceEvidenceUrl(String evidenceId) =>
+      '$baseUrl/download/maintenance-evidence/$evidenceId';
+  static String getIncidentEvidenceUrl(String evidenceId) =>
+      '$baseUrl/download/incident-evidence/$evidenceId';
+  static String getGenericFileUrl(String fileName) =>
+      '$baseUrl/file-upload/download/$fileName';
+
+  Future<ApiResponse<dynamic>> uploadPaymentReceipt({
+    required String invoiceId,
+    required Uint8List fileBytes,
+    required String fileName,
+  }) async {
+    try {
+      final response = await _sendMultipart((headers) async {
+        final request = http.MultipartRequest(
+          'POST',
+          Uri.parse('$baseUrl/upload/payment-receipt/$invoiceId'),
+        );
+        request.headers.addAll(headers);
+        request.files.add(http.MultipartFile.fromBytes(
+          'file',
+          fileBytes,
+          filename: fileName,
+        ));
+        return await request.send();
+      });
+      return _processResponse<dynamic>(response, (j) => j);
+    } catch (e) {
+      return ApiResponse.error('Connection error: $e');
+    }
+  }
+
+  Future<ApiResponse<dynamic>> uploadMaintenanceEvidence({
+    required String requestId,
+    required Uint8List fileBytes,
+    required String fileName,
+  }) async {
+    try {
+      final response = await _sendMultipart((headers) async {
+        final request = http.MultipartRequest(
+          'POST',
+          Uri.parse('$baseUrl/upload/maintenance-evidence/$requestId'),
+        );
+        request.headers.addAll(headers);
+        request.files.add(http.MultipartFile.fromBytes(
+          'file',
+          fileBytes,
+          filename: fileName,
+        ));
+        return await request.send();
+      });
+      return _processResponse<dynamic>(response, (j) => j);
+    } catch (e) {
+      return ApiResponse.error('Connection error: $e');
+    }
+  }
+
+  Future<ApiResponse<dynamic>> uploadIncidentEvidence({
+    required String reportId,
+    required Uint8List fileBytes,
+    required String fileName,
+  }) async {
+    try {
+      final response = await _sendMultipart((headers) async {
+        final request = http.MultipartRequest(
+          'POST',
+          Uri.parse('$baseUrl/upload/incident-evidence/$reportId'),
+        );
+        request.headers.addAll(headers);
+        request.files.add(http.MultipartFile.fromBytes(
+          'file',
+          fileBytes,
+          filename: fileName,
+        ));
+        return await request.send();
+      });
+      return _processResponse<dynamic>(response, (j) => j);
+    } catch (e) {
+      return ApiResponse.error('Connection error: $e');
+    }
+  }
+
+  Future<ApiResponse<dynamic>> uploadMessageAttachment({
+    required Uint8List fileBytes,
+    required String fileName,
+  }) async {
+    try {
+      final response = await _sendMultipart((headers) async {
+        final request = http.MultipartRequest(
+          'POST',
+          Uri.parse('$baseUrl/upload/message-attachment'),
+        );
+        request.headers.addAll(headers);
+        request.files.add(http.MultipartFile.fromBytes(
+          'file',
+          fileBytes,
+          filename: fileName,
+        ));
+        return await request.send();
+      });
+      return _processResponse<dynamic>(response, (j) => j);
+    } catch (e) {
+      return ApiResponse.error('Connection error: $e');
+    }
+  }
+
+  Future<ApiResponse<dynamic>> uploadGenericFile({
+    required Uint8List fileBytes,
+    required String fileName,
+  }) async {
+    try {
+      final response = await _sendMultipart((headers) async {
+        final request = http.MultipartRequest(
+          'POST',
+          Uri.parse('$baseUrl/file-upload/upload'),
+        );
+        request.headers.addAll(headers);
+        request.files.add(http.MultipartFile.fromBytes(
+          'file',
+          fileBytes,
+          filename: fileName,
+        ));
+        return await request.send();
+      });
+      return _processResponse<dynamic>(response, (j) => j);
     } catch (e) {
       return ApiResponse.error('Connection error: $e');
     }

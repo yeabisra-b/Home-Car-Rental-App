@@ -47,7 +47,7 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
 
     try {
       // Fetch headers first for images
-      final headers = await _apiService.getAuthHeaders();
+      final headers = await _apiService.getImageAuthHeaders();
       if (mounted) {
         setState(() {
           _authHeaders = headers;
@@ -554,8 +554,7 @@ class _OwnerDashboardState extends State<OwnerDashboard> {
 
     // Derive the image URL from the same base URL used by the rest of the app
     // so it works on physical devices, not just the Android emulator.
-    final String imageUrl =
-        '${ApiService.baseUrl}/download/user-profile/${_user!.id}';
+    final String imageUrl = ApiService.getUserProfileUrl(_user!.id);
     final String initials =
         '${_user!.firstName?[0] ?? ''}${_user!.lastName?[0] ?? ''}'
             .toUpperCase();

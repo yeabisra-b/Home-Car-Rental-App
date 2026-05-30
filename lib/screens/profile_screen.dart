@@ -51,7 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
 
     try {
-      final headers = await _apiService.getAuthHeaders();
+      final headers = await _apiService.getImageAuthHeaders();
       final response = await _apiService.getProfile();
 
       if (mounted) {
@@ -172,7 +172,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String _getProfileImageUrl() {
     if (_user == null) return '';
-    return '${ApiService.baseUrl}/download/user-profile/${_user!.id}';
+    return ApiService.getUserProfileUrl(_user!.id);
   }
 
   @override

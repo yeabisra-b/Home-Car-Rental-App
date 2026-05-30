@@ -47,7 +47,7 @@ class _TenantDashboardState extends State<TenantDashboard> {
     });
 
     try {
-      final headers = await _apiService.getAuthHeaders();
+      final headers = await _apiService.getImageAuthHeaders();
       if (mounted) {
         setState(() {
           _authHeaders = headers;
@@ -150,8 +150,7 @@ class _TenantDashboardState extends State<TenantDashboard> {
       );
     }
 
-    final String imageUrl =
-        '${ApiService.baseUrl}/download/user-profile/${_user!.id}';
+    final String imageUrl = ApiService.getUserProfileUrl(_user!.id);
     final String initials =
         '${_user!.firstName?[0] ?? ''}${_user!.lastName?[0] ?? ''}'
             .toUpperCase();

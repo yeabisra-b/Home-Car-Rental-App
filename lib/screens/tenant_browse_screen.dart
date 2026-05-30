@@ -53,7 +53,7 @@ class _TenantBrowseScreenState extends State<TenantBrowseScreen> {
   }
 
   Future<void> _fetchAuthHeaders() async {
-    final headers = await _apiService.getAuthHeaders();
+    final headers = await _apiService.getImageAuthHeaders();
     if (mounted) setState(() => _authHeaders = headers);
   }
 
@@ -98,7 +98,7 @@ class _TenantBrowseScreenState extends State<TenantBrowseScreen> {
   }
 
   String _getImageUrl(String mediaId) {
-    return '${ApiService.baseUrl}/download/property-media/$mediaId';
+    return ApiService.getPropertyMediaUrl(mediaId);
   }
 
   List<Property> get _filteredProperties {

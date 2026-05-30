@@ -160,7 +160,7 @@ class _EditPropertyScreenState extends State<EditPropertyScreen> {
   }
 
   Future<void> _fetchAuthHeaders() async {
-    final headers = await _apiService.getAuthHeaders();
+    final headers = await _apiService.getImageAuthHeaders();
     if (mounted) {
       setState(() {
         _authHeaders = headers;
@@ -169,7 +169,7 @@ class _EditPropertyScreenState extends State<EditPropertyScreen> {
   }
 
   String _getImageUrl(String mediaId) {
-    return '${ApiService.baseUrl}/download/property-media/$mediaId';
+    return ApiService.getPropertyMediaUrl(mediaId);
   }
 
   Future<void> _deleteMedia(String mediaId) async {
