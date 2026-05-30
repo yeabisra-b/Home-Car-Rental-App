@@ -89040,6 +89040,16 @@ function initLease(sequelize2) {
         type: DataTypes.DATE,
         allowNull: true
       },
+      buildingLeaseId: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+          model: "leases",
+          key: "id"
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL"
+      },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,
