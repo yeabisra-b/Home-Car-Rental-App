@@ -16,49 +16,51 @@ This project is a rental property management app for owners, tenants, and admins
 
 ## Quick Setup
 
-From the repo root:
+Get the entire stack up and running with a single command from the repo root:
 
+### Linux / macOS
 ```sh
-bash setup.sh
+bash start.sh
 ```
 
-This creates local `.env` files from the examples and runs `flutter pub get` in `client/`.
+### Windows (PowerShell)
+```powershell
+.\start.ps1
+```
 
-## Manual Setup
+This command automatically:
+1. Configures environment files (`.env`) for both client and server if they don't exist.
+2. Generates and injects unique, cryptographically secure 64-byte JWT secrets into `server/.env`.
+3. Installs Flutter client dependencies (`flutter pub get`).
+4. Launches the backend Node server in the background (routing output to `server.log`).
+5. Polls the server's health status until it is online.
+6. Boots the Flutter client in the foreground, ready for development.
+7. Gracefully stops the background server process when you quit the client or stop the script.
 
+---
+
+## Manual Setup & Run (Optional)
+
+If you prefer to run the components separately:
+
+### 1. Environment Files
 Create local environment files from the examples:
-
 ```sh
 cp client/.env.example client/.env
 cp server/.env.example server/.env
 ```
 
-Update `server/.env` with your PostgreSQL credentials and JWT secrets. By default, the server listens on port `3000`, and the client points to:
+Update `server/.env` with your PostgreSQL credentials and JWT secrets.
 
-```txt
-http://localhost:3000/api/v1
-```
-
-You can generate JWT secrets with:
-
-```sh
-node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
-```
-
-## Run The Server
-
+### 2. Run The Server
 ```sh
 cd server
 node index.js
 ```
 
-When it starts successfully, the API is available at `http://localhost:3000/api/v1`, API docs are at `http://localhost:3000/api-docs`, and the health check is at `http://localhost:3000/health`.
-
-## Run The Client
-
+### 3. Run The Client
 ```sh
 cd client
-flutter pub get
 flutter run
 ```
 
