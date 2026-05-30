@@ -1,6 +1,6 @@
 # Property Rentals Management System (RPMS)
 
-A modern, cross-platform mobile and web client application built with Flutter. RPMS serves as a complete portal for property owners, tenants, and administrators to list properties, manage rental units, execute leases, handle invoices, submit maintenance requests, and chat in real-time.
+A modern, cross-platform mobile and web client application built with Flutter. RPMS serves as a portal for property owners and tenants to list properties, manage rental units, execute leases, and communicate directly.
 
 The application communicates with a hosted REST API backend deployed at:  
 `https://mobile-app-backend-maa0.onrender.com/api/v1`
@@ -9,33 +9,25 @@ The application communicates with a hosted REST API backend deployed at:
 
 ## 🚀 Key Features
 
-### 1. Authentication & Multi-Role Support
-* **Multi-Role Accounts:** Users can register as an `OWNER` or `TENANT` and switch their active role seamlessly from their profile without creating separate accounts.
-* **Profile Management:** Edit profile fields, change passwords, and upload profile pictures.
-* **Contact Privacy Toggle:** Owners can mask their email and phone number on public property listings with a single privacy toggle (`isContactInfoVisible`).
+### 1. Authentication & Profile Management
+* **User Accounts:** Users can sign up as an `OWNER` or `TENANT`.
+* **Profile Management:** Edit profile fields (First/Middle/Last names, Phone number), change passwords, and upload profile pictures.
+* **Token Auth:** Secure storage of JWT tokens for persistent sessions.
 
 ### 2. Property & Unit Inventory
-* **Dual Property Types:** Register and manage both **Buildings** (e.g. apartments) and **Vehicles** (e.g. sedans, trucks).
-* **Granular Unit Management:** Add and edit specific units within a building property (specifying identifiers, rent, deposit, bedrooms, bathrooms, and custom amenities).
-* **Advanced Search & Filtering:** Tenants can search and filter available units by location (city), rental price range, bedroom count, and property type.
-* **Property Media:** Upload and manage property galleries (images and PDFs) with primary image designation.
+* **Dual Property Types:** Register and manage both **Buildings** (e.g. apartments, houses, commercial space) and **Vehicles** (e.g. sedans, SUVs, trucks, vans, motorcycles).
+* **Unit Management:** Add units within a building property (specifying identifiers, rent, deposit, bedrooms, bathrooms, and size).
+* **Tenant Browse & Search:** Tenants can browse available properties and units, search, and filter by location (city) and property type.
+* **Property Image Upload:** Select and upload a property image from the gallery to display on listings.
 
-### 3. Lease & Document Management
-* **Lease Agreements:** Owners can draft and execute digital lease agreements with tenants.
-* **Document Handling:** Upload and view signed PDF lease documents directly inside the app.
-* **Lifecycle Events:** Support for mutual lease termination and formal tenant move-out notices.
+### 3. Lease Management
+* **Lease Creation:** Owners can draft and create digital lease agreements for vacant units by specifying tenant details, monthly rent, security deposit, and lease dates.
+* **Lease Documents:** Upload and attach PDF/image lease documents to a unit.
+* **Tenant Lease Dashboard:** Tenants can view active lease details, submit move-out notices, or request lease termination.
 
-### 4. Billing & Financials
-* **Invoice Tracking:** View chronological lists of invoices categorized by status (`UNPAID`, `PENDING_REVIEW`, `PAID`, `OVERDUE`).
-* **Payment Verification:** Tenants can upload images of payment receipts to clear invoices, which are then reviewed by property owners.
-
-### 5. Maintenance Tickets
-* **Request Pipeline:** Tenants can submit maintenance requests with detailed descriptions, priority levels (`LOW`, `MEDIUM`, `HIGH`, `URGENT`), and evidence attachments.
-* **Tracking & Resolution:** Real-time progress updates through statuses from creation (`OPEN`) to resolution (`RESOLVED` or `CLOSED`).
-
-### 6. In-App Messaging
-* **Direct Chat Threads:** Secure communications channel between property owners and tenants regarding listings, leases, or maintenance.
-* **Rich Interactions:** Support for messaging subjects, thread organization, and attachment files.
+### 4. Direct Messaging
+* **Owner & Tenant Chat:** Direct, real-time message threads between property owners and tenants.
+* **Inbox view:** Organized inbox listings categorized by active threads for quick access.
 
 ---
 
