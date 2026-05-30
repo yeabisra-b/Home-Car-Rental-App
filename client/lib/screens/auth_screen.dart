@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
-
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
-
   @override
   _AuthScreenState createState() => _AuthScreenState();
 }
-
 class _AuthScreenState extends State<AuthScreen> {
   final ApiService _apiService = ApiService();
   final _formKey = GlobalKey<FormState>();
-
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _isLogin = true;
   bool _isLoading = false;
   bool _obscurePassword = true;
-
+  bool _obscureConfirmPassword = true;
   String _email = '';
   String _password = '';
   String _firstName = '';
@@ -23,15 +21,18 @@ class _AuthScreenState extends State<AuthScreen> {
   String _lastName = '';
   String _phoneNumber = '';
   String _role = 'TENANT'; // Default role for registration
-
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
   void _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
     _formKey.currentState!.save();
-
     setState(() {
       _isLoading = true;
     });
-
     try {
       if (_isLogin) {
         final response = await _apiService.login(_email, _password);
@@ -64,7 +65,6 @@ class _AuthScreenState extends State<AuthScreen> {
       }
     }
   }
-
   void _navigateToDashboard(String role) {
     if (role == 'OWNER') {
       Navigator.of(context).pushReplacementNamed('/owner-dashboard');
@@ -74,14 +74,12 @@ class _AuthScreenState extends State<AuthScreen> {
       _showError('Unknown role: $role');
     }
   }
-
   void _showError(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.red),
     );
   }
-
   Widget _buildTextField({
     required String label,
     required IconData icon,
@@ -90,10 +88,27 @@ class _AuthScreenState extends State<AuthScreen> {
     TextInputType keyboardType = TextInputType.text,
     required FormFieldValidator<String> validator,
     required FormFieldSetter<String> onSaved,
+    bool isRequired = false,
+    TextEditingController? controller,
   }) {
     return TextFormField(
+      controller: controller,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       decoration: InputDecoration(
-        labelText: label,
+        label: RichText(
+          text: TextSpan(
+            text: label,
+            style: TextStyle(color: Colors.grey[700], fontSize: 16),
+            children: isRequired
+                ? const [
+                    TextSpan(
+                      text: ' *',
+                      style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                    ),
+                  ]
+                : [],
+          ),
+        ),
         prefixIcon: Icon(icon, color: Colors.teal),
         suffixIcon: onToggleObscure != null
             ? IconButton(
@@ -119,6 +134,10 @@ class _AuthScreenState extends State<AuthScreen> {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Colors.teal, width: 2),
         ),
+        errorStyle: const TextStyle(
+          color: Colors.redAccent,
+          fontWeight: FontWeight.w500,
+        ),
       ),
       obscureText: obscureText,
       keyboardType: keyboardType,
@@ -126,7 +145,6 @@ class _AuthScreenState extends State<AuthScreen> {
       onSaved: onSaved,
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -192,71 +210,171 @@ class _AuthScreenState extends State<AuthScreen> {
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 24),
-                            
-                            _buildTextField(
-                              label: 'Email',
-                              icon: Icons.email_outlined,
-                              keyboardType: TextInputType.emailAddress,
-                              validator: (value) {
-                                if (value == null || value.isEmpty || !value.contains('@')) {
-                                  return 'Please enter a valid email address';
-                                }
-                                return null;
-                              },
-                              onSaved: (value) => _email = value!,
-                            ),
-                            const SizedBox(height: 16),
-                            
-                            _buildTextField(
-                              label: 'Password',
-                              icon: Icons.lock_outline,
-                              obscureText: _obscurePassword,
-                              onToggleObscure: () =>
-                                  setState(() => _obscurePassword = !_obscurePassword),
-                              validator: (value) {
-                                if (value == null || value.isEmpty || value.length < 6) {
-                                  return 'Password must be at least 6 characters';
-                                }
-                                return null;
-                              },
-                              onSaved: (value) => _password = value!,
-                            ),
-                            
-                            if (!_isLogin) ...[
+                            if (_isLogin) ...[
+                              _buildTextField(
+                                label: 'Email',
+                                icon: Icons.email_outlined,
+                                keyboardType: TextInputType.emailAddress,
+                                isRequired: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Email is required';
+                                  }
+                                  final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                                  if (!emailRegex.hasMatch(value)) {
+                                    return 'Please enter a valid email address';
+                                  }
+                                  return null;
+                                },
+                                onSaved: (value) => _email = value!,
+                              ),
                               const SizedBox(height: 16),
+                              
+                              _buildTextField(
+                                label: 'Password',
+                                icon: Icons.lock_outline,
+                                obscureText: _obscurePassword,
+                                onToggleObscure: () =>
+                                    setState(() => _obscurePassword = !_obscurePassword),
+                                isRequired: true,
+                                controller: _passwordController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Password is required';
+                                  }
+                                  if (value.length < 6) {
+                                    return 'Password must be at least 6 characters';
+                                  }
+                                  return null;
+                                },
+                                onSaved: (value) => _password = value!,
+                              ),
+                            ] else ...[
                               _buildTextField(
                                 label: 'First Name',
                                 icon: Icons.person_outline,
-                                validator: (value) => value == null || value.isEmpty ? 'Required' : null,
+                                isRequired: true,
+                                validator: (value) => value == null || value.isEmpty
+                                    ? 'First name is required'
+                                    : null,
                                 onSaved: (value) => _firstName = value!,
                               ),
                               const SizedBox(height: 16),
+                              
                               _buildTextField(
                                 label: 'Middle Name',
                                 icon: Icons.person_outline,
+                                isRequired: false,
                                 validator: (_) => null,
                                 onSaved: (value) => _middleName = value ?? '',
                               ),
                               const SizedBox(height: 16),
+                              
                               _buildTextField(
                                 label: 'Last Name',
                                 icon: Icons.person_outline,
-                                validator: (value) => value == null || value.isEmpty ? 'Required' : null,
+                                isRequired: true,
+                                validator: (value) => value == null || value.isEmpty
+                                    ? 'Last name is required'
+                                    : null,
                                 onSaved: (value) => _lastName = value!,
                               ),
                               const SizedBox(height: 16),
+                              
                               _buildTextField(
                                 label: 'Phone Number',
                                 icon: Icons.phone_outlined,
                                 keyboardType: TextInputType.phone,
-                                validator: (value) => value == null || value.isEmpty ? 'Required' : null,
+                                isRequired: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Phone number is required';
+                                  }
+                                  final phoneRegex = RegExp(r'^\+?[0-9]{10,15}$');
+                                  if (!phoneRegex.hasMatch(value)) {
+                                    return 'Please enter a valid phone number';
+                                  }
+                                  return null;
+                                },
                                 onSaved: (value) => _phoneNumber = value!,
                               ),
                               const SizedBox(height: 16),
+                              
+                              _buildTextField(
+                                label: 'Email',
+                                icon: Icons.email_outlined,
+                                keyboardType: TextInputType.emailAddress,
+                                isRequired: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Email is required';
+                                  }
+                                  final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                                  if (!emailRegex.hasMatch(value)) {
+                                    return 'Please enter a valid email address';
+                                  }
+                                  return null;
+                                },
+                                onSaved: (value) => _email = value!,
+                              ),
+                              const SizedBox(height: 16),
+                              
+                              _buildTextField(
+                                label: 'Password',
+                                icon: Icons.lock_outline,
+                                obscureText: _obscurePassword,
+                                onToggleObscure: () =>
+                                    setState(() => _obscurePassword = !_obscurePassword),
+                                isRequired: true,
+                                controller: _passwordController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Password is required';
+                                  }
+                                  if (value.length < 6) {
+                                    return 'Password must be at least 6 characters';
+                                  }
+                                  return null;
+                                },
+                                onSaved: (value) => _password = value!,
+                              ),
+                              const SizedBox(height: 16),
+                              
+                              _buildTextField(
+                                label: 'Confirm Password',
+                                icon: Icons.lock_outline,
+                                obscureText: _obscureConfirmPassword,
+                                onToggleObscure: () =>
+                                    setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                                isRequired: true,
+                                controller: _confirmPasswordController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please confirm your password';
+                                  }
+                                  if (value != _passwordController.text) {
+                                    return 'Passwords do not match';
+                                  }
+                                  return null;
+                                },
+                                onSaved: (_) => {},
+                              ),
+                              const SizedBox(height: 16),
+                              
                               DropdownButtonFormField<String>(
                                 initialValue: _role,
-                                decoration: InputDecoration(
-                                  labelText: 'Role',
+                                decoration: InputDecoration(label: RichText(
+                                    text: TextSpan(
+                                      text: 'Role',
+                                      style: TextStyle(color: Colors.grey[700], fontSize: 16),
+                                      children: const [
+                                        TextSpan(
+                                          text: ' *',
+                                          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                   prefixIcon: const Icon(Icons.badge_outlined, color: Colors.teal),
                                   filled: true,
                                   fillColor: Colors.grey[50],
@@ -316,6 +434,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                 setState(() {
                                   _isLogin = !_isLogin;
                                   _obscurePassword = true; // reset on mode switch
+                                  _obscureConfirmPassword = true;
+                                  _passwordController.clear();
+                                  _confirmPasswordController.clear();
                                 });
                               },
                               style: TextButton.styleFrom(
