@@ -109,6 +109,9 @@ flutter build apk --release
 # Or to build a Google Play App Bundle:
 flutter build appbundle --release
 ```
+## 📦 Download Releases
+
+If you prefer not to compile the source code yourself, pre-built application binaries and assets are available directly through GitHub. You can download the latest production-ready versions by navigating to the **Releases** section on the right-hand sidebar of this repository
 
 ### iOS (Xcode required)
 ```bash
